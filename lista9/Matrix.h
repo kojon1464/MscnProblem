@@ -19,6 +19,7 @@ public:
     Matrix& operator=(const Matrix& other);
     Matrix& operator=(Matrix&& other);
     double* operator[](int index);
+    double operator*(const Matrix& other);
 
     Exception getRowSum(int index, double& result);
     Exception getColumnSum(int index, double& result);
@@ -42,6 +43,4 @@ private:
     void copy(const Matrix& other);
     void move(Matrix& other);
     void remove();
-
-    bool isTagEqual(FILE* file, std::string tag);
 };

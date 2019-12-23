@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Array.h"
+#include "util.h"
 #include <algorithm>
 
 const std::string Array::SEPARATOR = ";";
@@ -73,31 +74,6 @@ double& Array::operator[](int i)
     return array[i];
 }
 
-Exception Array::readArrayFromFile(FILE * file, std::string header)
-{
-    if (file == NULL)
-    {
-        return Exception(true);
-    }
-
-    if (!isTagEqual(file, header))
-    {
-        return Exception(true);
-    }
-
-    for (int i = 0; i < getSize(); i++)
-    {
-        double number;
-        char* c;
-        if (fscanf(file, (" %lf%[" + SEPARATOR + "]").c_str(), &number, &c) < 2)
-        {
-            return Exception(true);
-        }
-        array[i] = number;
-    }
-    return Exception(false);
-}
-
 Exception Array::writeArrayToFile(FILE * file, std::string header)
 {
     if (file == NULL)
@@ -123,6 +99,31 @@ Exception Array::writeArrayToFile(FILE * file, std::string header)
         return Exception(true);
     }
 
+    return Exception(false);
+}
+
+Exception Array::readArrayFromFile(FILE * file, std::string header)
+{
+    if (file == NULL)
+    {
+        return Exception(true);
+    }
+
+    if (!util::isTagEqual(file, header))
+    {
+        return Exception(true);
+    }
+
+    for (int i = 0; i < getSize(); i++)
+    {
+        double number;
+        char* c;
+        if (fscanf(file, (" %lf%[" + SEPARATOR + "]").c_str(), &number, &c) < 2)
+        {
+            return Exception(true);
+        }
+        array[i] = number;
+    }
     return Exception(false);
 }
 
@@ -172,25 +173,4 @@ void Array::move(Array& other)
 void Array::remove()
 {
     delete[] array;
-}
-
-bool Array::isTagEqual(FILE * file, std::string tag)
-{
-    if (file == NULL)
-    {
-        return false;
-    }
-
-    fscanf(file, " ");
-    char* c = new char[tag.length() + 1];
-    fgets(c, tag.length() + 1, file);
-
-    if (strcmp(c, tag.c_str()) == 0)
-    {
-        delete[] c;
-        return true;
-    }
-
-    delete[] c;
-    return false;
 }

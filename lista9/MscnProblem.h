@@ -7,7 +7,7 @@
 class MscnProblem
 {
 public:
-    static const std::string SEPARTOR;
+    static const std::string SEPARATOR;
     static const int DEFAULT_FACILITIES_NUMBER;
 
     static const std::string DELIVERERES;
@@ -106,10 +106,10 @@ private:
     Exception writeMatrixBoundsToFile(FILE* file, Matrix& min, Matrix& max, std::string header);
 	Exception readMatrixBoundsFromFile(FILE* file, Matrix& min, Matrix& max, std::string header);
 
-	bool isTagEqual(FILE* file, std::string tag);
-
     double getIncome(Matrix& xm);
     double getCost(Matrix& xd, Matrix& xf, Matrix& xm);
     double getFixedCost(Matrix& xd, Matrix& xf, Matrix& xm);
+
+    Exception addFacilityFixedCost(Matrix& matrix, Array& costArray, double& fixedCost);
 };
 

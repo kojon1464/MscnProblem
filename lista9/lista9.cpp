@@ -1,7 +1,4 @@
-﻿
-#include "pch.h"
-#include "Matrix.h"
-#include "Array.h"
+﻿#include "pch.h"
 #include "MscnProblem.h"
 #include "Solution.h"
 #include <iostream>

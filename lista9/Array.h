@@ -19,8 +19,8 @@ public:
     Array& operator=(Array&& other);
     double& operator[](int i);
 
-    Exception readArrayFromFile(FILE* file, std::string header);
     Exception writeArrayToFile(FILE* file, std::string header);
+    Exception readArrayFromFile(FILE* file, std::string header);
 
     int getSize();
     Exception setSize(int size);
@@ -32,7 +32,5 @@ private:
     void copy(const Array& other);
     void move(Array& other);
     void remove();
-
-    bool isTagEqual(FILE* file, std::string tag);
 };
 

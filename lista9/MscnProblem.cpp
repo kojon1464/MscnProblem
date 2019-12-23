@@ -1,8 +1,9 @@
 #include "pch.h"
 #include "MscnProblem.h"
+#include "Util.h"
 #include <iostream>
 
-const std::string MscnProblem::SEPARTOR = ";";
+const std::string MscnProblem::SEPARATOR = ";";
 const int MscnProblem::DEFAULT_FACILITIES_NUMBER = 10;
 const std::string MscnProblem::DELIVERERES = "D";
 const std::string MscnProblem::FACTORIES = "F";
@@ -551,7 +552,6 @@ Exception MscnProblem::solutionToMatricesAndCheckNonNative(double* solution, Mat
     {
         return Exception(true);
     }
-
 	return Exception(false);
 }
 
@@ -573,7 +573,7 @@ Exception MscnProblem::writeMatrixBoundsToFile(FILE* file, Matrix& min, Matrix& 
     {
         for (int j = 0; j < min.getSizeX(); j++)
         {
-            if (fprintf(file, ("%lf" + SEPARTOR + "%lf" +SEPARTOR).c_str(), min[i][j], max[i][j]) <= 0)
+            if (fprintf(file, ("%lf" + SEPARATOR + "%lf" +SEPARATOR).c_str(), min[i][j], max[i][j]) <= 0)
             {
                 return Exception(true);
             }
@@ -584,21 +584,17 @@ Exception MscnProblem::writeMatrixBoundsToFile(FILE* file, Matrix& min, Matrix& 
     {
         return Exception(true);
     }
-
     return Exception(false);
 }
 
-
-
-
-Exception MscnProblem::readMatrixBoundsFromFile(FILE * file, Matrix & min, Matrix & max, std::string header)
+Exception MscnProblem::readMatrixBoundsFromFile(FILE* file, Matrix& min, Matrix& max, std::string header)
 {
 	if (file == NULL || min.getSizeX() != max.getSizeX() || min.getSizeY() != max.getSizeY())
 	{
 		return Exception(true);
 	}
 
-	if (!isTagEqual(file, header))
+	if (!util::isTagEqual(file, header))
 	{
 		return Exception(true);
 	}
@@ -610,7 +606,7 @@ Exception MscnProblem::readMatrixBoundsFromFile(FILE * file, Matrix & min, Matri
 			double number1, number2;
             char* c1;
             char* c2;
-			if (fscanf(file, (" %lf%[" + SEPARTOR + "]%lf%[" + SEPARTOR+ "]").c_str(), &number1, &c1, &number2, &c2) < 4)
+			if (fscanf(file, (" %lf%[" + SEPARATOR + "]%lf%[" + SEPARATOR+ "]").c_str(), &number1, &c1, &number2, &c2) < 4)
 			{
 				return Exception(true);
 			}
@@ -621,28 +617,7 @@ Exception MscnProblem::readMatrixBoundsFromFile(FILE * file, Matrix & min, Matri
 	return Exception(false);
 }
 
-bool MscnProblem::isTagEqual(FILE * file, std::string tag)
-{
-	if (file == NULL)
-	{
-		return false;
-	}
-
-	fscanf(file, " ");
-	char* c = new char[tag.length() + 1];
-	fgets(c, tag.length() + 1, file);
-
-	if (strcmp(c, tag.c_str()) == 0)
-	{
-		delete[] c;
-		return true;
-	}
-
-	delete[] c;
-	return false;
-}
-
-double MscnProblem::getIncome(Matrix & xm)
+double MscnProblem::getIncome(Matrix& xm)
 {
     double income = 0;
     for (int i = 0; i < numberOfMagazines; i++)
@@ -655,68 +630,43 @@ double MscnProblem::getIncome(Matrix & xm)
     return income;
 }
 
-double MscnProblem::getCost(Matrix & xd, Matrix & xf, Matrix & xm)
+double MscnProblem::getCost(Matrix& xd, Matrix& xf, Matrix& xm)
 {
     double cost = 0;
 
-    for (int i = 0; i < numberOfDeliverers; i++)
-    {
-        for (int j = 0; j < numberOfFactories; j++)
-        {
-            cost += cd[i][j] * xd[i][j];
-        }
-    }
+    cost += xd * cd;
+    cost += xf * cf;
+    cost += xm * cm;
 
-    for (int i = 0; i < numberOfFactories; i++)
-    {
-        for (int j = 0; j < numberOfMagazines; j++)
-        {
-            cost += cf[i][j] * xf[i][j];
-        }
-    }
-
-    for (int i = 0; i < numberOfMagazines; i++)
-    {
-        for (int j = 0; j < numberOfStores; j++)
-        {
-            cost += cm[i][j] * xm[i][j];
-        }
-    }
     return cost;
 }
 
-double MscnProblem::getFixedCost(Matrix & xd, Matrix & xf, Matrix & xm)
+double MscnProblem::getFixedCost(Matrix& xd, Matrix& xf, Matrix& xm)
 {
     double fixedCost = 0;
 
-    for (int i = 0; i < numberOfDeliverers; i++)
-    {
-        double sum = 0;
-        xd.getRowSum(i, sum);
-        if (sum > 0)
-        {
-            fixedCost += ud[i];
-        }
-    }
+    addFacilityFixedCost(xd, ud, fixedCost);
+    addFacilityFixedCost(xf, uf, fixedCost);
+    addFacilityFixedCost(xm, um, fixedCost);
 
-    for (int i = 0; i < numberOfFactories; i++)
-    {
-        double sum = 0;
-        xf.getRowSum(i, sum);
-        if (sum > 0)
-        {
-            fixedCost += uf[i];
-        }
-    }
-
-    for (int i = 0; i < numberOfMagazines; i++)
-    {
-        double sum = 0;
-        xm.getRowSum(i, sum);
-        if (sum > 0)
-        {
-            fixedCost += um[i];
-        }
-    }
     return fixedCost;
+}
+
+Exception MscnProblem::addFacilityFixedCost(Matrix& matrix, Array& costArray, double& fixedCost)
+{
+    if (matrix.getSizeY() != costArray.getSize())
+    {
+        return Exception(true);
+    }
+
+    for (int i = 0; i < matrix.getSizeY(); i++)
+    {
+        double sum = 0;
+        matrix.getRowSum(i, sum);
+        if (sum > 0)
+        {
+            fixedCost += costArray[i];
+        }
+    }
+    return Exception(false);
 }

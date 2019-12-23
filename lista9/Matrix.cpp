@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Matrix.h"
+#include "Util.h"
 #include <algorithm>
 
 const std::string Matrix::SEPARATOR = ";";
@@ -102,6 +103,24 @@ double* Matrix::operator[](int i)
         return NULL;
     }
     return matrix[i];
+}
+
+double Matrix::operator*(const Matrix& other)
+{
+    if (sizeY != other.sizeY || sizeX != other.sizeX)
+    {
+        throw Exception(true);
+    }
+
+    double sum = 0;
+    for (int i = 0; i < sizeY; i++)
+    {
+        for (int j = 0; j < sizeX; j++)
+        {
+            sum += other.matrix[i][j] * matrix[i][j];
+        }
+    }
+    return sum;
 }
 
 Exception Matrix::getRowSum(int index, double& result)
@@ -211,7 +230,7 @@ Exception Matrix::readMatrixFromFile(FILE * file, std::string header)
         return Exception(true);
     }
 
-    if (!isTagEqual(file, header))
+    if (!util::isTagEqual(file, header))
     {
         return Exception(true);
     }
@@ -329,25 +348,4 @@ void Matrix::remove()
         }
         delete[] matrix;
     }
-}
-
-bool Matrix::isTagEqual(FILE * file, std::string tag)
-{
-    if (file == NULL)
-    {
-        return false;
-    }
-
-    fscanf(file, " ");
-    char* c = new char[tag.length() + 1];
-    fgets(c, tag.length() + 1, file);
-
-    if (strcmp(c, tag.c_str()) == 0)
-    {
-        delete[] c;
-        return true;
-    }
-
-    delete[] c;
-    return false;
 }
