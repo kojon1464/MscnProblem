@@ -1,11 +1,13 @@
 ﻿#include "pch.h"
 #include "MscnProblem.h"
 #include "Solution.h"
+#include "Random.h"
+#include "RandomSearch.h"
 #include <iostream>
 
 int main()
 {
-	MscnProblem problem;
+	/*MscnProblem problem;
 	
     if (problem.readFormFile("text.txt").getOcurred())
     {
@@ -31,6 +33,21 @@ int main()
 	double min, max;
 	problem.getSolutionBounds(7, min, max);
 	std::cout << min << std::endl;
-	std::cout << max;
+	std::cout << max << std::endl;
     delete[] array;
+
+    Random random(10);
+    std::cout << random.getInt(-100, -5) << std::endl;
+    std::cout << random.getInt(-100, -5) << std::endl;
+    std::cout << random.getInt(-100, -5) << std::endl;*/
+
+    MscnProblem problem;
+    problem.generateInstance(10);
+    Exception exception;
+    RandomSearch search(&problem, exception);
+
+    while (true)
+    {
+        search.iterate();
+    }
 }

@@ -4,25 +4,43 @@
 #include <iostream>
 
 const std::string MscnProblem::SEPARATOR = ";";
-const int MscnProblem::DEFAULT_FACILITIES_NUMBER = 10;
+const int MscnProblem::DEFAULT_FACILITIES_NUMBER = 3;
+
 const std::string MscnProblem::DELIVERERES = "D";
 const std::string MscnProblem::FACTORIES = "F";
 const std::string MscnProblem::MAGAZINES = "M";
 const std::string MscnProblem::STORES = "S";
+
 const std::string MscnProblem::LIMIT_ARRAY_DELIVERERS = "sd";
 const std::string MscnProblem::LIMIT_ARRAY_FACTORIES = "sf";
 const std::string MscnProblem::LIMIT_ARRAY_MAGAZINES = "sm";
 const std::string MscnProblem::LIMIT_ARRAY_STORES = "ss";
+
 const std::string MscnProblem::COST_MATRIX_DELIVERERS = "cd";
 const std::string MscnProblem::COST_MATRIX_FACTORIES = "cf";
 const std::string MscnProblem::COST_MATRIX_MAGAZINES = "cm";
+
 const std::string MscnProblem::COST_ARRAY_DELIVERERS = "ud";
 const std::string MscnProblem::COST_ARRAY_FACTORIES = "uf";
 const std::string MscnProblem::COST_ARRAY_MAGAZINES = "um";
 const std::string MscnProblem::PRICE_ARRAY_STORE = "p";
+
 const std::string MscnProblem::MIN_MAX_MATRIXES_DELIVERESR = "xdminmax";
 const std::string MscnProblem::MIN_MAX_MATRIXES_FACTORIES = "xfminmax";
 const std::string MscnProblem::MIN_MAX_MATRIXES_MAGAZINES = "xmminmax";
+
+const double MscnProblem::COST_MIN_CONSTRAINT = 1;
+const double MscnProblem::COST_MAX_CONSTRAINT = 10;
+const double MscnProblem::FACILITY_COST_MIN_CONSTRAINT = 50;
+const double MscnProblem::FACILITY_COST_MAX_CONSTRAINT = 200;
+const double MscnProblem::PROFIT_MIN_CONSTRAINT = 2;
+const double MscnProblem::PROFIT_MAX_CONSTRAINT = 100;
+const double MscnProblem::FACILITY_LIMIT_MIN_CONSTRAINT = 100;
+const double MscnProblem::FACILITY_LIMIT_MAX_CONSTRAINT = 7000;
+const double MscnProblem::MIN_BOUNDARY_MIN_CONSTRAINT = 0;
+const double MscnProblem::MIN_BOUNDARY_MAX_CONSTRAINT = 20;
+const double MscnProblem::MAX_BOUNDARY_MIN_CONSTRAINT = 180;
+const double MscnProblem::MAX_BOUNDARY_MAX_CONSTRAINT = 220;
 
 MscnProblem::MscnProblem()
 {
@@ -72,34 +90,14 @@ Exception MscnProblem::constraintsSatified(double* solution, bool& result)
         result = false;
     }
 
+    if (!checkLimitForFacility(numberOfDeliverers, xd, sd) ||
+        !checkLimitForFacility(numberOfFactories, xf, sf) ||
+        !checkLimitForFacility(numberOfMagazines, xm, sm))
+    {
+        result = false;
+    }
+
     double sum = 0;
-    for (int i = 0; i < numberOfDeliverers; i++)
-    {
-        xd.getRowSum(i, sum);
-        if (sum > sd[i])
-        {
-            result = false;
-        }
-    }
-
-    for (int i = 0; i < numberOfFactories; i++)
-    {
-        xf.getRowSum(i, sum);
-        if (sum > sf[i])
-        {
-            result = false;
-        }
-    }
-
-    for (int i = 0; i < numberOfMagazines; i++)
-    {
-        xm.getRowSum(i, sum);
-        if (sum > sm[i])
-        {
-            result = false;
-        }
-    }
-
     for (int i = 0; i < numberOfStores; i++)
     {
         xf.getColumnSum(i, sum);
@@ -289,11 +287,36 @@ Exception MscnProblem::readFormFile(std::string path)
 	return Exception(false);
 }
 
+void MscnProblem::generateInstance(long unsigned int seed)
+{
+    Random random(seed);
+
+    cd.fillRandomly(random, COST_MIN_CONSTRAINT, COST_MAX_CONSTRAINT);
+    cf.fillRandomly(random, COST_MIN_CONSTRAINT, COST_MAX_CONSTRAINT);
+    cm.fillRandomly(random, COST_MIN_CONSTRAINT, COST_MAX_CONSTRAINT);
+
+    xdmin.fillRandomly(random, MIN_BOUNDARY_MIN_CONSTRAINT, MIN_BOUNDARY_MAX_CONSTRAINT);
+    xfmin.fillRandomly(random, MIN_BOUNDARY_MIN_CONSTRAINT, MIN_BOUNDARY_MAX_CONSTRAINT);
+    xmmin.fillRandomly(random, MIN_BOUNDARY_MIN_CONSTRAINT, MIN_BOUNDARY_MAX_CONSTRAINT);
+
+    xdmax.fillRandomly(random, MAX_BOUNDARY_MIN_CONSTRAINT, MAX_BOUNDARY_MAX_CONSTRAINT);
+    xfmax.fillRandomly(random, MAX_BOUNDARY_MIN_CONSTRAINT, MAX_BOUNDARY_MAX_CONSTRAINT);
+    xmmax.fillRandomly(random, MAX_BOUNDARY_MIN_CONSTRAINT, MAX_BOUNDARY_MAX_CONSTRAINT);
+
+    sd.fillRandomly(random, FACILITY_LIMIT_MIN_CONSTRAINT, FACILITY_LIMIT_MAX_CONSTRAINT);
+    sf.fillRandomly(random, FACILITY_LIMIT_MIN_CONSTRAINT, FACILITY_LIMIT_MAX_CONSTRAINT);
+    sm.fillRandomly(random, FACILITY_LIMIT_MIN_CONSTRAINT, FACILITY_LIMIT_MAX_CONSTRAINT);
+    ss.fillRandomly(random, FACILITY_LIMIT_MIN_CONSTRAINT, FACILITY_LIMIT_MAX_CONSTRAINT);
+
+    ud.fillRandomly(random, FACILITY_COST_MIN_CONSTRAINT, FACILITY_COST_MAX_CONSTRAINT);
+    uf.fillRandomly(random, FACILITY_COST_MIN_CONSTRAINT, FACILITY_COST_MAX_CONSTRAINT);
+    um.fillRandomly(random, FACILITY_COST_MIN_CONSTRAINT, FACILITY_COST_MAX_CONSTRAINT);
+    p.fillRandomly(random, PROFIT_MIN_CONSTRAINT, PROFIT_MAX_CONSTRAINT);
+}
+
 Exception MscnProblem::getSolutionBounds(int index, double& min, double& max)
 {
-	int solutionLenght = numberOfDeliverers * numberOfFactories +
-		numberOfFactories * numberOfMagazines +
-		numberOfMagazines * numberOfStores;
+    int solutionLenght = getRequiredSolutionLenght();
 	int xdLength = numberOfDeliverers * numberOfFactories;
 	int xfLength = numberOfFactories * numberOfMagazines;
 
@@ -320,6 +343,13 @@ Exception MscnProblem::getSolutionBounds(int index, double& min, double& max)
 	max = xmmax[correctedIndex / xmmin.getSizeX()][correctedIndex % xmmin.getSizeX()];
 
 	return Exception(false);
+}
+
+int MscnProblem::getRequiredSolutionLenght()
+{
+    return numberOfDeliverers * numberOfFactories +
+        numberOfFactories * numberOfMagazines +
+        numberOfMagazines * numberOfStores;
 }
 
 Exception MscnProblem::setNumberOfDeliverers(int numberOfDeliverers)
@@ -650,6 +680,20 @@ double MscnProblem::getFixedCost(Matrix& xd, Matrix& xf, Matrix& xm)
     addFacilityFixedCost(xm, um, fixedCost);
 
     return fixedCost;
+}
+
+bool MscnProblem::checkLimitForFacility(int facilitiesNumber, Matrix& facilityMatrix, Array& facilityLimitAray)
+{
+    double sum = 0;
+    for (int i = 0; i < facilitiesNumber; i++)
+    {
+        facilityMatrix.getRowSum(i, sum);
+        if (sum > facilityLimitAray[i])
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 Exception MscnProblem::addFacilityFixedCost(Matrix& matrix, Array& costArray, double& fixedCost)

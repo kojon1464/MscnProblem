@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Exception.h"
+#include "Random.h"
 #include <string>
 
 class Array
@@ -22,7 +23,10 @@ public:
     Exception writeArrayToFile(FILE* file, std::string header);
     Exception readArrayFromFile(FILE* file, std::string header);
 
+    void fillRandomly(Random& random, double min, double max);
+
     int getSize();
+    double* getInternalArray();
     Exception setSize(int size);
 private:
     double* array;

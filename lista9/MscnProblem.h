@@ -33,6 +33,19 @@ public:
     static const std::string MIN_MAX_MATRIXES_FACTORIES;
     static const std::string MIN_MAX_MATRIXES_MAGAZINES;
 
+    static const double COST_MIN_CONSTRAINT;
+    static const double COST_MAX_CONSTRAINT;
+    static const double FACILITY_COST_MIN_CONSTRAINT;
+    static const double FACILITY_COST_MAX_CONSTRAINT;
+    static const double PROFIT_MIN_CONSTRAINT;
+    static const double PROFIT_MAX_CONSTRAINT;
+    static const double FACILITY_LIMIT_MIN_CONSTRAINT;
+    static const double FACILITY_LIMIT_MAX_CONSTRAINT;
+    static const double MIN_BOUNDARY_MIN_CONSTRAINT;
+    static const double MIN_BOUNDARY_MAX_CONSTRAINT;
+    static const double MAX_BOUNDARY_MIN_CONSTRAINT;
+    static const double MAX_BOUNDARY_MAX_CONSTRAINT;
+
     MscnProblem();
     ~MscnProblem();
 
@@ -42,7 +55,10 @@ public:
     Exception writeToFile(std::string path);
 	Exception readFormFile(std::string path);
 
+    void generateInstance(long unsigned int seed);
+
 	Exception getSolutionBounds(int index, double& min, double& max);
+    int getRequiredSolutionLenght();
 
     Exception setNumberOfDeliverers(int numberOfDeliverers);
     Exception setNumberOfFactories(int numberOfFactories);
@@ -109,6 +125,8 @@ private:
     double getIncome(Matrix& xm);
     double getCost(Matrix& xd, Matrix& xf, Matrix& xm);
     double getFixedCost(Matrix& xd, Matrix& xf, Matrix& xm);
+
+    bool checkLimitForFacility(int facilitiesNumber, Matrix& facilityMatrix, Array& facilityLimitAray);
 
     Exception addFacilityFixedCost(Matrix& matrix, Array& costArray, double& fixedCost);
 };

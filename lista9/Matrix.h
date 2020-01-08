@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Exception.h"
+#include "Random.h"
 #include <string>
 
 class Matrix
@@ -29,6 +30,8 @@ public:
 
     Exception writeMatrixToFile(FILE* file, std::string header);
     Exception readMatrixFromFile(FILE* file, std::string header);
+
+    void fillRandomly(Random& random, double min, double max);
 
     int getSizeX();
     int getSizeY();

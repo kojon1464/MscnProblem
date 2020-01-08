@@ -251,6 +251,17 @@ Exception Matrix::readMatrixFromFile(FILE * file, std::string header)
     return Exception(false);
 }
 
+void Matrix::fillRandomly(Random& random, double min, double max)
+{
+    for (int i = 0; i < sizeY; i++)
+    {
+        for (int j = 0; j < sizeX; j++)
+        {
+            matrix[i][j] = random.getDouble(min, max);
+        }
+    }
+}
+
 int Matrix::getSizeX()
 {
     return sizeX;

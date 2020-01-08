@@ -127,9 +127,22 @@ Exception Array::readArrayFromFile(FILE * file, std::string header)
     return Exception(false);
 }
 
+void Array::fillRandomly(Random& random, double min, double max)
+{
+    for (int i = 0; i < size; i++)
+    {
+        array[i] = random.getDouble(min, max);
+    }
+}
+
 int Array::getSize()
 {
     return size;
+}
+
+double* Array::getInternalArray()
+{
+    return array;
 }
 
 Exception Array::setSize(int size)
