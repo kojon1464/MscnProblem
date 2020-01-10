@@ -2,6 +2,7 @@
 
 #include "Matrix.h"
 #include "Array.h"
+#include "Solution.h"
 #include <string>
 
 class MscnProblem
@@ -50,7 +51,9 @@ public:
     ~MscnProblem();
 
     Exception getQuality(double* solution, double& result);
+    Exception getQuality(Solution& solution, double& result);
     Exception constraintsSatified(double* solution, bool& result);
+    Exception constraintsSatified(Solution& solution, bool& result);
 
     Exception writeToFile(std::string path);
 	Exception readFormFile(std::string path);
@@ -64,6 +67,11 @@ public:
     Exception setNumberOfFactories(int numberOfFactories);
     Exception setNumberOfMagazines(int numberOfMagazines);
     Exception setNumberOfStores(int numberOfStores);
+
+    int getNumberOfDeliverers();
+    int getNumberOfFactories();
+    int getNumberOfMagazines();
+    int getNumberOfStores();
 
     Exception setValueInCd(int row, int cloumn, double value);
     Exception setValueInCf(int row, int cloumn, double value);
@@ -114,10 +122,13 @@ private:
     Array um;
     Array p;
 
+    Exception getQuality(Matrix& xd, Matrix& xf, Matrix& xm, double& result);
+    Exception constraintsSatified(Matrix& xd, Matrix& xf, Matrix& xm, bool& result);
+
     Exception setNonNegativeValueMatrix(int row, int column, double value, Matrix& matrix);
     Exception setNonNegativeValueArray(int index, double value, Array& array);
     Exception solutionToMatrices(double* solution, Matrix& xd, Matrix& xf, Matrix& xm);
-    Exception solutionToMatricesAndCheckNonNative(double* solution, Matrix& xd, Matrix& xf, Matrix& xm);
+    Exception checkNonNativeNumbersInMatrices(Matrix& xd, Matrix& xf, Matrix& xm);
 
     Exception writeMatrixBoundsToFile(FILE* file, Matrix& min, Matrix& max, std::string header);
 	Exception readMatrixBoundsFromFile(FILE* file, Matrix& min, Matrix& max, std::string header);

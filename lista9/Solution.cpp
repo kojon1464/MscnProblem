@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Solution.h"
 
+class MscnProblem;
+
 const int Solution::DEFAULT_FACILITIES_NUMBER = 10;
 const std::string Solution::DELIVERERES = "D";
 const std::string Solution::FACTORIES = "F";
@@ -17,6 +19,19 @@ Solution::Solution()
     setNumberOfFactories(DEFAULT_FACILITIES_NUMBER);
     setNumberOfMagazines(DEFAULT_FACILITIES_NUMBER);
     setNumberOfStores(DEFAULT_FACILITIES_NUMBER);
+}
+
+Solution::Solution(int numberOfDeliverers, int numberOfFactories, int numberOfMagazines, int numberOfStores, Exception& exception)
+{
+    if (numberOfDeliverers <= 0 || numberOfFactories <= 0 || numberOfMagazines <= 0 || numberOfStores <= 0)
+    {
+        exception.setOcurred(true);
+    }
+
+    setNumberOfDeliverers(numberOfDeliverers);
+    setNumberOfFactories(numberOfFactories);
+    setNumberOfMagazines(numberOfMagazines);
+    setNumberOfStores(numberOfStores);
 }
 
 
@@ -67,11 +82,75 @@ Exception Solution::readFormFile(std::string path)
     return Exception(false);
 }
 
+
+Exception Solution::writeToFile(std::string path)
+{
+    FILE* file = fopen(path.c_str(), "w+");
+    if (file == NULL)
+    {
+        return Exception(true);
+    }
+
+    {
+        bool fail1, fail2, fail3, fail4;
+        fail1 = fprintf(file, (DELIVERERES + " %d\n").c_str(), numberOfDeliverers) <= 0;
+        fail2 = fprintf(file, (FACTORIES + " %d\n").c_str(), numberOfFactories) <= 0;
+        fail3 = fprintf(file, (MAGAZINES + " %d\n").c_str(), numberOfMagazines) <= 0;
+        fail4 = fprintf(file, (STORES + " %d\n").c_str(), numberOfStores) <= 0;
+
+        if (fail1 || fail2 || fail3 || fail4)
+        {
+            fclose(file);
+            return Exception(true);
+        }
+    }
+    {
+        bool errorOcurred1, errorOcurred2, errorOcurred3;
+        errorOcurred1 = xd.writeMatrixToFile(file, MATRIX_DELIVERERS).getOcurred();
+        errorOcurred2 = xf.writeMatrixToFile(file, MATRIX_FACTORIES).getOcurred();
+        errorOcurred3 = xm.writeMatrixToFile(file, MATRIX_MAGAZINES).getOcurred();
+
+        if (errorOcurred1 || errorOcurred2 || errorOcurred3)
+        {
+            fclose(file);
+            return Exception(true);
+        }
+    }
+
+    fclose(file);
+    return Exception(false);
+}
+
+Exception Solution::loadFromArray(Array& array)
+{
+    if (array.getSize() != getSolutionLenght())
+    {
+        return Exception(true);
+    }
+
+    int offset = 0;
+    Exception exception;
+    Matrix xdTemp(numberOfDeliverers, numberOfFactories, array.getInternalArray(), exception);
+    offset += numberOfDeliverers * numberOfFactories;
+    Matrix xfTemp(numberOfFactories, numberOfMagazines, array.getInternalArray() + offset, exception);
+    offset += numberOfFactories * numberOfMagazines;
+    Matrix xmTemp(numberOfMagazines, numberOfStores, array.getInternalArray() + offset, exception);
+
+    xd = xdTemp;
+    xf = xfTemp;
+    xm = xmTemp;
+
+    if (exception.getOcurred())
+    {
+        return exception;
+    }
+
+    return Exception(false);
+}
+
 Exception Solution::toArray(double *& array)
 {
-    int solutionLenght = numberOfDeliverers * numberOfFactories +
-        numberOfFactories * numberOfMagazines +
-        numberOfMagazines * numberOfStores;
+    int solutionLenght = getSolutionLenght();
     double* temp = new double[solutionLenght];
     int counter = 0;
     for (int i = 0; i < xd.getSizeY(); i++)
@@ -97,6 +176,13 @@ Exception Solution::toArray(double *& array)
     }
     array = temp;
     return Exception(false);
+}
+
+int Solution::getSolutionLenght()
+{
+    return numberOfDeliverers * numberOfFactories +
+        numberOfFactories * numberOfMagazines +
+        numberOfMagazines * numberOfStores;
 }
 
 Exception Solution::setNumberOfDeliverers(int numberOfDeliverers)
@@ -155,4 +241,19 @@ Exception Solution::setNumberOfStores(int numberOfStores)
     xm.setSizeX(numberOfStores);
 
     return Exception(false);
+}
+
+Matrix& Solution::getDeliverersMatrix()
+{
+    return xd;
+}
+
+Matrix& Solution::getFactoriesMatrix()
+{
+    return xf;
+}
+
+Matrix& Solution::getMagazinesMatrix()
+{
+    return xm;
 }

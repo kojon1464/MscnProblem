@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Matrix.h"
+#include "Array.h"
 #include <string>
+
 class Solution
 {
 public:
@@ -17,16 +19,25 @@ public:
     static const std::string MATRIX_MAGAZINES;
 
     Solution();
+    explicit Solution(int numberOfDeliverers, int numberOfFactories, int numberOfMagazines, int numberOfStores, Exception& exception);
     ~Solution();
 
     Exception readFormFile(std::string path);
+    Exception writeToFile(std::string path);
 
+    Exception loadFromArray(Array& array);
     Exception toArray(double*& array);
+
+    int getSolutionLenght();
 
     Exception setNumberOfDeliverers(int numberOfDeliverers);
     Exception setNumberOfFactories(int numberOfFactories);
     Exception setNumberOfMagazines(int numberOfMagazines);
     Exception setNumberOfStores(int numberOfStores);
+
+    Matrix& getDeliverersMatrix();
+    Matrix& getFactoriesMatrix();
+    Matrix& getMagazinesMatrix();
 private:
     int numberOfDeliverers;
     int numberOfFactories;

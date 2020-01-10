@@ -57,77 +57,33 @@ MscnProblem::~MscnProblem()
 Exception MscnProblem::getQuality(double* solution, double& result)
 {
     Matrix xd, xf, xm;
-    Exception except = solutionToMatricesAndCheckNonNative(solution, xd, xf, xm);
 
-    if (except.getOcurred())
+    if (solutionToMatrices(solution, xd, xf, xm).getOcurred())
     {
-        return except;
+        return Exception(true);
     }
+    return getQuality(xd, xf, xm, result);
+}
 
-    result = getIncome(xm) - getCost(xd, xf, xm) - getFixedCost(xd, xf, xm);
-    return Exception(false);
+Exception MscnProblem::getQuality(Solution& solution, double& result)
+{
+    return getQuality(solution.getDeliverersMatrix(), solution.getFactoriesMatrix(), solution.getMagazinesMatrix(), result);
 }
 
 Exception MscnProblem::constraintsSatified(double* solution, bool& result)
 {
-    result = true;
     Matrix xd, xf, xm;
-    Exception except = solutionToMatricesAndCheckNonNative(solution, xd, xf, xm);
-
-    if (except.getOcurred())
+    if (solutionToMatrices(solution, xd, xf, xm).getOcurred())
     {
         result = false;
-        return except;
+        return Exception(true);
     }
-    
-    bool xdBound, xfBound, xmBound;
-    xd.isInBounds(xdmin, xdmax, xdBound);
-    xf.isInBounds(xfmin, xfmax, xfBound);
-    xm.isInBounds(xmmin, xmmax, xmBound);
+    return constraintsSatified(xd, xf, xm, result);
+}
 
-    if (!xdBound || !xfBound || !xmBound)
-    {
-        result = false;
-    }
-
-    if (!checkLimitForFacility(numberOfDeliverers, xd, sd) ||
-        !checkLimitForFacility(numberOfFactories, xf, sf) ||
-        !checkLimitForFacility(numberOfMagazines, xm, sm))
-    {
-        result = false;
-    }
-
-    double sum = 0;
-    for (int i = 0; i < numberOfStores; i++)
-    {
-        xf.getColumnSum(i, sum);
-        if (sum > ss[i])
-        {
-            result = false;
-        }
-    }
-
-    double sum1 = 0;
-    for (int i = 0; i < numberOfFactories; i++)
-    {
-        xd.getColumnSum(i, sum);
-        xf.getRowSum(i, sum1);
-        if (sum < sum1)
-        {
-            result = false;
-        }
-    }
-
-    for (int i = 0; i < numberOfMagazines; i++)
-    {
-        xf.getColumnSum(i, sum);
-        xm.getRowSum(i, sum1);
-        if (sum < sum1)
-        {
-            result = false;
-        }
-    }
-    return Exception(false);
+Exception MscnProblem::constraintsSatified(Solution& solution, bool& result)
+{
+    return constraintsSatified(solution.getDeliverersMatrix(), solution.getFactoriesMatrix(), solution.getMagazinesMatrix(), result);
 }
 
 Exception MscnProblem::writeToFile(std::string path)
@@ -436,6 +392,26 @@ Exception MscnProblem::setNumberOfStores(int numberOfStores)
     return Exception(false);
 }
 
+int MscnProblem::getNumberOfDeliverers()
+{
+    return numberOfDeliverers;
+}
+
+int MscnProblem::getNumberOfFactories()
+{
+    return numberOfFactories;
+}
+
+int MscnProblem::getNumberOfMagazines()
+{
+    return numberOfMagazines;
+}
+
+int MscnProblem::getNumberOfStores()
+{
+    return numberOfStores;
+}
+
 Exception MscnProblem::setValueInCd(int row, int cloumn, double value)
 {
     return setNonNegativeValueMatrix(row, cloumn, value, cd);
@@ -521,6 +497,80 @@ Exception MscnProblem::setValueInP(int index, double value)
     return setNonNegativeValueArray(index, value, p);
 }
 
+Exception MscnProblem::getQuality(Matrix &xd, Matrix &xf, Matrix& xm, double& result)
+{
+    Exception except = checkNonNativeNumbersInMatrices(xd, xf, xm);
+
+    if (except.getOcurred())
+    {
+        return except;
+    }
+
+    result = getIncome(xm) - getCost(xd, xf, xm) - getFixedCost(xd, xf, xm);
+    return Exception(false);
+}
+
+Exception MscnProblem::constraintsSatified(Matrix& xd, Matrix& xf, Matrix& xm, bool& result)
+{
+    result = true;
+    Exception except = checkNonNativeNumbersInMatrices(xd, xf, xm);
+
+    if (except.getOcurred())
+    {
+        result = false;
+        return except;
+    }
+
+    bool xdBound, xfBound, xmBound;
+    xd.isInBounds(xdmin, xdmax, xdBound);
+    xf.isInBounds(xfmin, xfmax, xfBound);
+    xm.isInBounds(xmmin, xmmax, xmBound);
+
+    if (!xdBound || !xfBound || !xmBound)
+    {
+        result = false;
+    }
+
+    if (!checkLimitForFacility(numberOfDeliverers, xd, sd) ||
+        !checkLimitForFacility(numberOfFactories, xf, sf) ||
+        !checkLimitForFacility(numberOfMagazines, xm, sm))
+    {
+        result = false;
+    }
+
+    double sum = 0;
+    for (int i = 0; i < numberOfStores; i++)
+    {
+        xf.getColumnSum(i, sum);
+        if (sum > ss[i])
+        {
+            result = false;
+        }
+    }
+
+    double sum1 = 0;
+    for (int i = 0; i < numberOfFactories; i++)
+    {
+        xd.getColumnSum(i, sum);
+        xf.getRowSum(i, sum1);
+        if (sum < sum1)
+        {
+            result = false;
+        }
+    }
+
+    for (int i = 0; i < numberOfMagazines; i++)
+    {
+        xf.getColumnSum(i, sum);
+        xm.getRowSum(i, sum1);
+        if (sum < sum1)
+        {
+            result = false;
+        }
+    }
+    return Exception(false);
+}
+
 Exception MscnProblem::setNonNegativeValueMatrix(int row, int column, double value, Matrix& matrix)
 {
     if (value < 0 || row < 0 || column < 0 || row >= matrix.getSizeY() || column >= matrix.getSizeX())
@@ -569,15 +619,8 @@ Exception MscnProblem::solutionToMatrices(double* solution, Matrix& xd, Matrix& 
 	return Exception(false);
 }
 
-Exception MscnProblem::solutionToMatricesAndCheckNonNative(double* solution, Matrix& xd, Matrix& xf, Matrix& xm)
-{
-    Exception e = solutionToMatrices(solution, xd, xf, xm);
-
-    if (e.getOcurred())
-    {
-        return e;
-    }
-
+Exception MscnProblem::checkNonNativeNumbersInMatrices(Matrix& xd, Matrix& xf, Matrix& xm)
+{   
     if (!xd.allNumbersNonNegative() || !xf.allNumbersNonNegative() || !xm.allNumbersNonNegative())
     {
         return Exception(true);

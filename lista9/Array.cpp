@@ -2,8 +2,10 @@
 #include "Array.h"
 #include "util.h"
 #include <algorithm>
+#include <iostream>
 
 const std::string Array::SEPARATOR = ";";
+const std::string Array::SPACER = ";";
 const int Array::DEFAULT_SIZE = 10;
 
 Array::Array()
@@ -125,6 +127,15 @@ Exception Array::readArrayFromFile(FILE * file, std::string header)
         array[i] = number;
     }
     return Exception(false);
+}
+
+void Array::print()
+{
+    for (int i = 0; i < size; i++)
+    {
+        std::cout << array[i] << SPACER;
+    }
+    std::cout << std::endl;
 }
 
 void Array::fillRandomly(Random& random, double min, double max)

@@ -46,8 +46,20 @@ int main()
     Exception exception;
     RandomSearch search(&problem, exception);
 
-    while (true)
+    const int ITERATIONS = 100000;
+
+    for(int i = 0; i < ITERATIONS; i++)
     {
         search.iterate();
+    }
+
+    Solution solution;
+    if (search.getBestSolution(solution).getOcurred()) 
+    {
+        std::cout << "Nie znaleziono rozwiazania" << std::endl;
+    }
+    else
+    {
+        solution.writeToFile("bestSolution.txt");
     }
 }

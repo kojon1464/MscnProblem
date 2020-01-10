@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "RandomSearch.h"
+#include "Util.h"
 #include <iostream>
 
 RandomSearch::RandomSearch(MscnProblem* problem, Exception& exception)
@@ -9,8 +10,16 @@ RandomSearch::RandomSearch(MscnProblem* problem, Exception& exception)
         exception.setOcurred(true);
     }
 
+    int d, f, m, s;
+    d = problem->getNumberOfDeliverers();
+    f = problem->getNumberOfFactories();
+    m = problem->getNumberOfMagazines();
+    s = problem->getNumberOfStores();
+
+    tempSolution = Solution(d, f, m, s, exception);
+    bestSolution = Solution(d, f, m, s, exception);
+
     this->problem = problem;
-    bestSolution.setSize(problem->getRequiredSolutionLenght());
     bestQuality = 0;
     found = false;
 }
@@ -20,7 +29,7 @@ RandomSearch::~RandomSearch()
     problem = NULL;
 }
 
-Exception RandomSearch::getBestSolution(Array& bestSolution)
+Exception RandomSearch::getBestSolution(Solution& bestSolution)
 {
     if (!found)
     {
@@ -34,32 +43,20 @@ Exception RandomSearch::getBestSolution(Array& bestSolution)
 
 Exception RandomSearch::iterate()
 {
-    if (bestSolution.getSize() != problem->getRequiredSolutionLenght())
-    {
-        return Exception(true);
-    }
+    util::generateRandomSolution(*problem, tempSolution);
 
-    Random random;
-    double min, max;
-    Exception exception;
-    Array tempSolution(bestSolution.getSize(), exception);
+    bool result;
+    problem->constraintsSatified(tempSolution, result);
 
-    for (int i = 0; i < bestSolution.getSize(); i++)
-    {
-        problem->getSolutionBounds(i, min, max);
-        tempSolution[i] = random.getDouble(min, max);
-    }
-
-    bool result = false;
-    problem->constraintsSatified(tempSolution.getInternalArray(), result);
     if (result)
     {
         double tempQuality = 0;
-        problem->getQuality(tempSolution.getInternalArray(), tempQuality);
+        problem->getQuality(tempSolution, tempQuality);
         if (tempQuality > bestQuality)
         {
             bestQuality = tempQuality;
             bestSolution = tempSolution;
+            found = true;
             std::cout << "found better solution, quality:" << tempQuality << std::endl;
         }
     }

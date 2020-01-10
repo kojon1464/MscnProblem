@@ -21,3 +21,19 @@ bool util::isTagEqual(FILE* file, std::string tag)
     delete[] c;
     return false;
 }
+
+void util::generateRandomSolution(MscnProblem& problem, Solution& solution)
+{
+    Random random;
+    double min, max;
+    Exception exception;
+    Array tempSolution(solution.getSolutionLenght(), exception);
+
+    for (int i = 0; i < solution.getSolutionLenght(); i++)
+    {
+        problem.getSolutionBounds(i, min, max);
+        tempSolution[i] = random.getDouble(min, max);
+    }
+
+    solution.loadFromArray(tempSolution);
+}

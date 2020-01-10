@@ -8,6 +8,7 @@ class Array
 {
 public:
     static const std::string SEPARATOR;
+    static const std::string SPACER;
     static const int DEFAULT_SIZE;
 
     Array();
@@ -22,6 +23,8 @@ public:
 
     Exception writeArrayToFile(FILE* file, std::string header);
     Exception readArrayFromFile(FILE* file, std::string header);
+
+    void print();
 
     void fillRandomly(Random& random, double min, double max);
 
