@@ -1,7 +1,5 @@
 #include "pch.h"
 #include "Population.h"
-#include "pch.h"
-#include <stddef.h>
 
 const int Population::DEFAULT_POPULATION_SIZE = 20;
 
@@ -42,6 +40,15 @@ Population& Population::operator=(const Population& other)
 	return *this;
 }
 
+Specimen* Population::operator[](const int index)
+{
+    if (index < 0 || index >= populationSize)
+    {
+        throw Exception(true);
+    }
+    return population[index];
+}
+
 Exception Population::initializate(MscnProblem& problem)
 {
 	for (int i = 0; i < populationSize; i++)
@@ -56,6 +63,29 @@ Exception Population::initializate(MscnProblem& problem)
 		} while (!constraintsSatified);
 		population.push_back(tempSpecimen);
 	}
+    return Exception(false);
+}
+
+Exception Population::getBestSpecimen(solution& solutiion)
+{
+    if (population.size() != populationSize)
+    {
+        return Exception(true);
+    }
+    Specimen* best;
+    double bestQuality = -DBL_MAX;
+    for (int i = 0; i < population.size(); i++)
+    {
+        double tempQuality;
+        population[i]->getQuality(tempQuality);
+        if (tempQuality > bestQuality)
+        {
+            best = population[i];
+            bestQuality = tempQuality;
+        }
+    }
+    solution = best->getSolution();
+    return Exception(false);
 }
 
 void Population::copy(const Population& other)

@@ -12,6 +12,8 @@ public:
 	Exception randomizeSolution();
 	Exception getQuality(double& result);
 	Exception constraintsSatified(bool& result);
+
+    Solution& getSolution();
 private:
 	Solution solution;
 	MscnProblem* problem;

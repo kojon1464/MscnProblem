@@ -16,8 +16,10 @@ public:
 	~Population();
 
 	Population& operator=(const Population& other);
+    Specimen* operator[](const int index);
 
 	Exception initializate(MscnProblem& problem);
+    Exception getBestSolution(Solution& solution);
 private:
 	std::vector<Specimen*> population;
 	int populationSize;

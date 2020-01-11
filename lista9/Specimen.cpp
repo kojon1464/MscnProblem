@@ -30,3 +30,8 @@ Exception Specimen::constraintsSatified(bool& result)
 {
 	return problem->constraintsSatified(solution, result);
 }
+
+Solution& Specimen::getSolution()
+{
+    return solution;
+}
