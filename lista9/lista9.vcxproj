@@ -152,17 +152,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Array.h" />
+    <ClInclude Include="DiffEvol.h" />
     <ClInclude Include="Exception.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="MscnProblem.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Population.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="RandomSearch.h" />
     <ClInclude Include="Solution.h" />
+    <ClInclude Include="Specimen.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Array.cpp" />
+    <ClCompile Include="DiffEvol.cpp" />
     <ClCompile Include="Exception.cpp" />
     <ClCompile Include="lista9.cpp" />
     <ClCompile Include="Matrix.cpp" />
@@ -173,9 +177,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Population.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="RandomSearch.cpp" />
     <ClCompile Include="Solution.cpp" />
+    <ClCompile Include="Specimen.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
