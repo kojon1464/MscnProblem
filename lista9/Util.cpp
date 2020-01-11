@@ -22,8 +22,13 @@ bool util::isTagEqual(FILE* file, std::string tag)
     return false;
 }
 
-void util::generateRandomSolution(MscnProblem& problem, Solution& solution)
+Exception util::generateRandomSolution(MscnProblem& problem, Solution& solution)
 {
+	if (!problem.sameSize(solution))
+	{
+		return Exception(true);
+	}
+
     Random random;
     double min, max;
     Exception exception;

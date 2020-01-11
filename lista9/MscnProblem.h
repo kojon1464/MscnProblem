@@ -50,6 +50,8 @@ public:
     MscnProblem();
     ~MscnProblem();
 
+	bool sameSize(Solution& solution);
+
     Exception getQuality(double* solution, double& result);
     Exception getQuality(Solution& solution, double& result);
     Exception constraintsSatified(double* solution, bool& result);

@@ -29,11 +29,17 @@ public:
     Exception toArray(double*& array);
 
     int getSolutionLenght();
+	Exception setSize(int numberOfDeliverers, int numberOfFactories, int numberOfMagazines, int numberOfStores);
 
     Exception setNumberOfDeliverers(int numberOfDeliverers);
     Exception setNumberOfFactories(int numberOfFactories);
     Exception setNumberOfMagazines(int numberOfMagazines);
     Exception setNumberOfStores(int numberOfStores);
+
+	int getNumberOfDeliverers();
+	int getNumberOfFactories();
+	int getNumberOfMagazines();
+	int getNumberOfStores();
 
     Matrix& getDeliverersMatrix();
     Matrix& getFactoriesMatrix();

@@ -7,5 +7,5 @@
 namespace util
 {
     bool isTagEqual(FILE* file, std::string tag);
-    void generateRandomSolution(MscnProblem& problem, Solution& solution);
+    Exception generateRandomSolution(MscnProblem& problem, Solution& solution);
 }

@@ -22,7 +22,6 @@ private:
 	std::vector<Specimen*> population;
 	int populationSize;
 
-	void create();
 	void copy(const Population& other);
 	void remove();
 };

@@ -15,25 +15,13 @@ const std::string Solution::MATRIX_MAGAZINES = "xm";
 
 Solution::Solution()
 {
-    setNumberOfDeliverers(DEFAULT_FACILITIES_NUMBER);
-    setNumberOfFactories(DEFAULT_FACILITIES_NUMBER);
-    setNumberOfMagazines(DEFAULT_FACILITIES_NUMBER);
-    setNumberOfStores(DEFAULT_FACILITIES_NUMBER);
+	setSize(DEFAULT_FACILITIES_NUMBER, DEFAULT_FACILITIES_NUMBER, DEFAULT_FACILITIES_NUMBER, DEFAULT_FACILITIES_NUMBER);
 }
 
 Solution::Solution(int numberOfDeliverers, int numberOfFactories, int numberOfMagazines, int numberOfStores, Exception& exception)
 {
-    if (numberOfDeliverers <= 0 || numberOfFactories <= 0 || numberOfMagazines <= 0 || numberOfStores <= 0)
-    {
-        exception.setOcurred(true);
-    }
-
-    setNumberOfDeliverers(numberOfDeliverers);
-    setNumberOfFactories(numberOfFactories);
-    setNumberOfMagazines(numberOfMagazines);
-    setNumberOfStores(numberOfStores);
+	exception = setSize(DEFAULT_FACILITIES_NUMBER, DEFAULT_FACILITIES_NUMBER, DEFAULT_FACILITIES_NUMBER, DEFAULT_FACILITIES_NUMBER);
 }
-
 
 Solution::~Solution()
 {
@@ -185,6 +173,21 @@ int Solution::getSolutionLenght()
         numberOfMagazines * numberOfStores;
 }
 
+Exception Solution::setSize(int numberOfDeliverers, int numberOfFactories, int numberOfMagazines, int numberOfStores)
+{
+	if (numberOfDeliverers <= 0 || numberOfFactories <= 0 || numberOfMagazines <= 0 || numberOfStores <= 0)
+	{
+		return Exception(true);
+	}
+
+	setNumberOfDeliverers(numberOfDeliverers);
+	setNumberOfFactories(numberOfFactories);
+	setNumberOfMagazines(numberOfMagazines);
+	setNumberOfStores(numberOfStores);
+
+	return Exception(false);
+}
+
 Exception Solution::setNumberOfDeliverers(int numberOfDeliverers)
 {
     if (numberOfDeliverers <= 0)
@@ -241,6 +244,26 @@ Exception Solution::setNumberOfStores(int numberOfStores)
     xm.setSizeX(numberOfStores);
 
     return Exception(false);
+}
+
+int Solution::getNumberOfDeliverers()
+{
+	return numberOfDeliverers;
+}
+
+int Solution::getNumberOfFactories()
+{
+	return numberOfFactories;
+}
+
+int Solution::getNumberOfMagazines()
+{
+	return numberOfMagazines;
+}
+
+int Solution::getNumberOfStores()
+{
+	return numberOfStores;
 }
 
 Matrix& Solution::getDeliverersMatrix()

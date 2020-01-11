@@ -54,6 +54,14 @@ MscnProblem::~MscnProblem()
 {
 }
 
+bool MscnProblem::sameSize(Solution& solution)
+{
+	return solution.getNumberOfDeliverers() == numberOfDeliverers &&
+		solution.getNumberOfFactories() == numberOfFactories &&
+		solution.getNumberOfMagazines() == numberOfMagazines &&
+		solution.getNumberOfStores() == numberOfStores;
+}
+
 Exception MscnProblem::getQuality(double* solution, double& result)
 {
     Matrix xd, xf, xm;
@@ -67,6 +75,10 @@ Exception MscnProblem::getQuality(double* solution, double& result)
 
 Exception MscnProblem::getQuality(Solution& solution, double& result)
 {
+	if (!sameSize(solution))
+	{
+		return Exception(true);
+	}
     return getQuality(solution.getDeliverersMatrix(), solution.getFactoriesMatrix(), solution.getMagazinesMatrix(), result);
 }
 
@@ -83,6 +95,10 @@ Exception MscnProblem::constraintsSatified(double* solution, bool& result)
 
 Exception MscnProblem::constraintsSatified(Solution& solution, bool& result)
 {
+	if (!sameSize(solution))
+	{
+		return Exception(true);
+	}
     return constraintsSatified(solution.getDeliverersMatrix(), solution.getFactoriesMatrix(), solution.getMagazinesMatrix(), result);
 }
 
@@ -513,6 +529,7 @@ Exception MscnProblem::getQuality(Matrix &xd, Matrix &xf, Matrix& xm, double& re
 Exception MscnProblem::constraintsSatified(Matrix& xd, Matrix& xf, Matrix& xm, bool& result)
 {
     result = true;
+
     Exception except = checkNonNativeNumbersInMatrices(xd, xf, xm);
 
     if (except.getOcurred())

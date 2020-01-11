@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Population.h"
 #include "pch.h"
+#include <stddef.h>
 
 const int Population::DEFAULT_POPULATION_SIZE = 20;
 
@@ -41,11 +42,19 @@ Population& Population::operator=(const Population& other)
 	return *this;
 }
 
-void Population::create()
+Exception Population::initializate(MscnProblem& problem)
 {
-	for (int i = 0; i < populationSize; i++) 
+	for (int i = 0; i < populationSize; i++)
 	{
-		population.push_back(new Specimen());
+		Exception exception;
+		Specimen* tempSpecimen = new Specimen(&problem, exception);
+		bool constraintsSatified = false;
+		do 
+		{
+			tempSpecimen->randomizeSolution();
+			tempSpecimen->constraintsSatified(constraintsSatified);
+		} while (!constraintsSatified);
+		population.push_back(tempSpecimen);
 	}
 }
 
