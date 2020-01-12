@@ -15,6 +15,11 @@ DiffEvol::DiffEvol(MscnProblem* problem, Exception& exception)
     population.initializate(*problem);
 }
 
+Exception DiffEvol::getBestQuality(double & bestQuality)
+{
+    return Exception();
+}
+
 DiffEvol::~DiffEvol()
 {
 }

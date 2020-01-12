@@ -5,6 +5,7 @@
 #include "RandomSearch.h"
 #include "DiffEvol.h"
 #include <iostream>
+#include <ctime>
 
 int main()
 {
@@ -45,11 +46,15 @@ int main()
     MscnProblem problem;
     problem.generateInstance(20);
     Exception exception;
+
+    int TIME_LIMIT = 10;
+    int QUALITY_INVOKE_LIMIT = 1000;
+
+    clock_t begin = clock();
+
     RandomSearch search(&problem, exception);
 
-    const int ITERATIONS = 1000000;
-
-    for(int i = 0; i < ITERATIONS; i++)
+    while((clock() - begin)/CLOCKS_PER_SEC <= TIME_LIMIT && problem.getQualityInvokeCounter() <= QUALITY_INVOKE_LIMIT)
     {
         search.iterate();
     }
@@ -61,6 +66,9 @@ int main()
     }
     else
     {
+        double quality;
+        problem.getQuality(solution, quality);
+        std::cout << "bestSolution quality: " << quality << std::endl;
         solution.writeToFile("bestSolution.txt");
     }
 }

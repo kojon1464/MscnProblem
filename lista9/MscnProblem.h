@@ -64,6 +64,7 @@ public:
 
 	Exception getSolutionBounds(int index, double& min, double& max);
     int getRequiredSolutionLenght();
+    int getQualityInvokeCounter();
 
     Exception setNumberOfDeliverers(int numberOfDeliverers);
     Exception setNumberOfFactories(int numberOfFactories);
@@ -97,6 +98,8 @@ public:
     Exception setValueInUm(int index, double value);
     Exception setValueInP(int index, double value);
 private:
+    int qualityInvokeCounter;
+
     int numberOfDeliverers;
     int numberOfFactories;
     int numberOfMagazines;

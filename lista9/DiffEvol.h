@@ -11,6 +11,7 @@ public:
 	static const double DIFFERENCE_WEIGHT;
 
     DiffEvol(MscnProblem* problem, Exception& exception);
+    Exception getBestQuality(double& bestQuality);
     ~DiffEvol();
 
     Exception getBestSolution(Solution& bestSolution);

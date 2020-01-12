@@ -44,6 +44,7 @@ const double MscnProblem::MAX_BOUNDARY_MAX_CONSTRAINT = 220;
 
 MscnProblem::MscnProblem()
 {
+    qualityInvokeCounter = 0;
     setNumberOfDeliverers(DEFAULT_FACILITIES_NUMBER);
     setNumberOfFactories(DEFAULT_FACILITIES_NUMBER);
     setNumberOfMagazines(DEFAULT_FACILITIES_NUMBER);
@@ -324,6 +325,11 @@ int MscnProblem::getRequiredSolutionLenght()
         numberOfMagazines * numberOfStores;
 }
 
+int MscnProblem::getQualityInvokeCounter()
+{
+    return qualityInvokeCounter;
+}
+
 Exception MscnProblem::setNumberOfDeliverers(int numberOfDeliverers)
 {
     if (numberOfDeliverers <= 0)
@@ -515,6 +521,7 @@ Exception MscnProblem::setValueInP(int index, double value)
 
 Exception MscnProblem::getQuality(Matrix &xd, Matrix &xf, Matrix& xm, double& result)
 {
+    qualityInvokeCounter++;
     Exception except = checkNonNativeNumbersInMatrices(xd, xf, xm);
 
     if (except.getOcurred())
