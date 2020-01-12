@@ -31,6 +31,29 @@ Exception Specimen::constraintsSatified(bool& result)
 	return problem->constraintsSatified(solution, result);
 }
 
+Exception Specimen::setClampedValue(int index, double value)
+{
+	if (problem->getRequiredSolutionLenght() != solution.getSolutionLenght() || index < 0 || index >= solution.getSolutionLenght())
+	{
+		return Exception(true);
+	}
+	double min, max;
+	problem->getSolutionBounds(index, min, max);
+	value = std::max(min, std::min(max, value));
+	solution.setValue(index, value);
+	return Exception(false);
+}
+
+Exception Specimen::getValue(int index, double& value)
+{
+	return solution.getValue(index, value);
+}
+
+int Specimen::getSolutionSize()
+{
+	return solution.getSolutionLenght();
+}
+
 Solution& Specimen::getSolution()
 {
     return solution;

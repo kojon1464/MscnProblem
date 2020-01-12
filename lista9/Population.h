@@ -20,6 +20,10 @@ public:
 
 	Exception initializate(MscnProblem& problem);
     Exception getBestSolution(Solution& solution);
+
+	Exception getRandomSpecimen(Specimen*& specimen);
+
+	int getPopulationSize();
 private:
 	std::vector<Specimen*> population;
 	int populationSize;

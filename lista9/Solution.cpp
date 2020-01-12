@@ -20,7 +20,7 @@ Solution::Solution()
 
 Solution::Solution(int numberOfDeliverers, int numberOfFactories, int numberOfMagazines, int numberOfStores, Exception& exception)
 {
-	exception = setSize(DEFAULT_FACILITIES_NUMBER, DEFAULT_FACILITIES_NUMBER, DEFAULT_FACILITIES_NUMBER, DEFAULT_FACILITIES_NUMBER);
+	exception = setSize(numberOfDeliverers, numberOfFactories, numberOfMagazines, numberOfStores);
 }
 
 Solution::~Solution()
@@ -244,6 +244,62 @@ Exception Solution::setNumberOfStores(int numberOfStores)
     xm.setSizeX(numberOfStores);
 
     return Exception(false);
+}
+
+Exception Solution::setValue(int index, double value)
+{
+	int solutionLenght = getSolutionLenght();
+	int xdLength = numberOfDeliverers * numberOfFactories;
+	int xfLength = numberOfFactories * numberOfMagazines;
+
+	if (index < 0 || index >= solutionLenght)
+	{
+		return Exception(true);
+	}
+
+	if (index < xdLength)
+	{
+		xd[index / xd.getSizeX()][index % xd.getSizeX()] = value;
+		return Exception(false);
+	}
+	if (index < xdLength + xfLength)
+	{
+		int correctedIndex = index - xdLength;
+		xf[correctedIndex / xf.getSizeX()][correctedIndex % xf.getSizeX()] = value;
+		return Exception(false);
+	}
+	int correctedIndex = index - (xdLength + xfLength);
+	xm[correctedIndex / xm.getSizeX()][correctedIndex % xm.getSizeX()] = value;
+
+	return Exception(false);
+}
+
+Exception Solution::getValue(int index, double& value)
+{
+	int solutionLenght = getSolutionLenght();
+	int xdLength = numberOfDeliverers * numberOfFactories;
+	int xfLength = numberOfFactories * numberOfMagazines;
+
+	if (index < 0 || index >= solutionLenght)
+	{
+		return Exception(true);
+	}
+
+	if (index < xdLength)
+	{
+		value = xd[index / xd.getSizeX()][index % xd.getSizeX()];
+		return Exception(false);
+	}
+	if (index < xdLength + xfLength)
+	{
+		int correctedIndex = index - xdLength;
+		value = xf[correctedIndex / xf.getSizeX()][correctedIndex % xf.getSizeX()];
+		return Exception(false);
+	}
+	int correctedIndex = index - (xdLength + xfLength);
+	value = xm[correctedIndex / xm.getSizeX()][correctedIndex % xm.getSizeX()];
+
+	return Exception(false);
 }
 
 int Solution::getNumberOfDeliverers()

@@ -13,6 +13,10 @@ public:
 	Exception getQuality(double& result);
 	Exception constraintsSatified(bool& result);
 
+	Exception setClampedValue(int index, double value);
+	Exception getValue(int index, double& value);
+	int getSolutionSize();
+
     Solution& getSolution();
 private:
 	Solution solution;

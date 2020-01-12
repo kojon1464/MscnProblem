@@ -3,6 +3,7 @@
 #include "Solution.h"
 #include "Random.h"
 #include "RandomSearch.h"
+#include "DiffEvol.h"
 #include <iostream>
 
 int main()
@@ -42,11 +43,11 @@ int main()
     std::cout << random.getInt(-100, -5) << std::endl;*/
 
     MscnProblem problem;
-    problem.generateInstance(10);
+    problem.generateInstance(20);
     Exception exception;
     RandomSearch search(&problem, exception);
 
-    const int ITERATIONS = 100000;
+    const int ITERATIONS = 1000000;
 
     for(int i = 0; i < ITERATIONS; i++)
     {

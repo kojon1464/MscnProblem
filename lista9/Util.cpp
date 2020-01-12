@@ -41,4 +41,5 @@ Exception util::generateRandomSolution(MscnProblem& problem, Solution& solution)
     }
 
     solution.loadFromArray(tempSolution);
+	return Exception(false);
 }

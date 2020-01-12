@@ -36,6 +36,9 @@ public:
     Exception setNumberOfMagazines(int numberOfMagazines);
     Exception setNumberOfStores(int numberOfStores);
 
+	Exception setValue(int index, double value);
+	Exception getValue(int index, double& value);
+
 	int getNumberOfDeliverers();
 	int getNumberOfFactories();
 	int getNumberOfMagazines();

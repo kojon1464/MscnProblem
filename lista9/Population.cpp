@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Population.h"
 
-const int Population::DEFAULT_POPULATION_SIZE = 20;
+const int Population::DEFAULT_POPULATION_SIZE = 100;
 
 Population::Population()
 {
@@ -66,15 +66,16 @@ Exception Population::initializate(MscnProblem& problem)
     return Exception(false);
 }
 
-Exception Population::getBestSpecimen(solution& solutiion)
+Exception Population::getBestSolution(Solution& solution)
 {
     if (population.size() != populationSize)
     {
         return Exception(true);
     }
-    Specimen* best;
-    double bestQuality = -DBL_MAX;
-    for (int i = 0; i < population.size(); i++)
+    Specimen* best = population[0];
+    double bestQuality;
+	best->getQuality(bestQuality);
+    for (int i = 1; i < population.size(); i++)
     {
         double tempQuality;
         population[i]->getQuality(tempQuality);
@@ -86,6 +87,22 @@ Exception Population::getBestSpecimen(solution& solutiion)
     }
     solution = best->getSolution();
     return Exception(false);
+}
+
+Exception Population::getRandomSpecimen(Specimen*& specimen)
+{
+	if (population.size() != populationSize)
+	{
+		return Exception(true);
+	}
+	Random random;
+	specimen = population[random.getInt(0, populationSize - 1)];
+	return Exception(false);
+}
+
+int Population::getPopulationSize()
+{
+	return populationSize;
 }
 
 void Population::copy(const Population& other)
