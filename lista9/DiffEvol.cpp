@@ -2,8 +2,8 @@
 #include "DiffEvol.h"
 #include <iostream>
 
-const double DiffEvol::CROSS_PROBABILITY = 0.5;
-const double DiffEvol::DIFFERENCE_WEIGHT = 0.2;
+const double DEFAULT_CROSS_PROBABILITY = 0.5;
+const double DEFAULT_DIFFERENCE_WEIGHT = 0.2;
 
 DiffEvol::DiffEvol(MscnProblem* problem, Exception& exception)
 {
@@ -15,7 +15,7 @@ DiffEvol::DiffEvol(MscnProblem* problem, Exception& exception)
     population.initializate(*problem);
 }
 
-Exception DiffEvol::getBestQuality(double & bestQuality)
+Exception DiffEvol::getBestQuality(double& bestQuality)
 {
     return Exception();
 }
@@ -48,13 +48,13 @@ Exception DiffEvol::iterate()
 		for (int j = 0; j < current->getSolutionSize(); j++) 
 		{
 			Random random;
-			if (random.getDouble(0, 1) < CROSS_PROBABILITY)
+			if (random.getDouble(0, 1) < crossProbability)
 			{
 				double baseValue, add1Value, add2Value;
 				base->getValue(j, baseValue);
 				add1->getValue(j, add1Value);
 				add2->getValue(j, add2Value);
-				newSpecimen->setClampedValue(j, baseValue + DIFFERENCE_WEIGHT * (add1Value - add2Value));
+				newSpecimen->setClampedValue(j, baseValue + differenceWeight * (add1Value - add2Value));
 			}
 		}
 
@@ -71,6 +71,32 @@ Exception DiffEvol::iterate()
 		delete newSpecimen;
 	}
 	return Exception(false);
+}
+
+Exception DiffEvol::setCrossProbability(double crossProbability)
+{
+    if (crossProbability < 0 || crossProbability > 1)
+    {
+        return Exception(true);
+    }
+    this->crossProbability = crossProbability;
+    return Exception(false);
+}
+
+Exception DiffEvol::setDifferenceWeight(double differenceWeight)
+{
+    this->differenceWeight = differenceWeight;
+    return Exception(false);
+}
+
+double DiffEvol::getCrossProbability()
+{
+    return crossProbability;
+}
+
+double DiffEvol::getDifferenceWeight()
+{
+    return differenceWeight;
 }
 
 bool DiffEvol::differentSpecimens(Specimen* specimen1, Specimen* specimen2, Specimen* specimen3, Specimen* specimen4)

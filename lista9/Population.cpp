@@ -51,6 +51,7 @@ Specimen* Population::operator[](const int index)
 
 Exception Population::initializate(MscnProblem& problem)
 {
+    remove();
 	for (int i = 0; i < populationSize; i++)
 	{
 		Exception exception;

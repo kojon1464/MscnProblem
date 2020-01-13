@@ -7,8 +7,8 @@
 class DiffEvol
 {
 public:
-	static const double CROSS_PROBABILITY;
-	static const double DIFFERENCE_WEIGHT;
+    static const double DEFAULT_CROSS_PROBABILITY;
+    static const double DEFAULT_DIFFERENCE_WEIGHT;
 
     DiffEvol(MscnProblem* problem, Exception& exception);
     Exception getBestQuality(double& bestQuality);
@@ -16,7 +16,16 @@ public:
 
     Exception getBestSolution(Solution& bestSolution);
     Exception iterate();
+
+    Exception setCrossProbability(double crossProbability);
+    Exception setDifferenceWeight(double differenceWeight);
+
+    double getCrossProbability();
+    double getDifferenceWeight();
 private:
+    double crossProbability;
+    double differenceWeight;
+
     MscnProblem* problem;
     Population population;
 

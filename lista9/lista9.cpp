@@ -47,12 +47,12 @@ int main()
     problem.generateInstance(20);
     Exception exception;
 
-    int TIME_LIMIT = 10;
-    int QUALITY_INVOKE_LIMIT = 1000;
+    int TIME_LIMIT = 13;
+    int QUALITY_INVOKE_LIMIT = 1000000;
 
     clock_t begin = clock();
 
-    RandomSearch search(&problem, exception);
+    DiffEvol search(&problem, exception);
 
     while((clock() - begin)/CLOCKS_PER_SEC <= TIME_LIMIT && problem.getQualityInvokeCounter() <= QUALITY_INVOKE_LIMIT)
     {
