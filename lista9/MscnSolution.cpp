@@ -1,33 +1,33 @@
 #include "pch.h"
-#include "Solution.h"
+#include "MscnSolution.h"
 
 class MscnProblem;
 
-const int Solution::DEFAULT_FACILITIES_NUMBER = 10;
-const std::string Solution::DELIVERERES = "D";
-const std::string Solution::FACTORIES = "F";
-const std::string Solution::MAGAZINES = "M";
-const std::string Solution::STORES = "S";
-const std::string Solution::MATRIX_DELIVERERS = "xd";
-const std::string Solution::MATRIX_FACTORIES = "xf";
-const std::string Solution::MATRIX_MAGAZINES = "xm";
+const int MscnSolution::DEFAULT_FACILITIES_NUMBER = 10;
+const std::string MscnSolution::DELIVERERES = "D";
+const std::string MscnSolution::FACTORIES = "F";
+const std::string MscnSolution::MAGAZINES = "M";
+const std::string MscnSolution::STORES = "S";
+const std::string MscnSolution::MATRIX_DELIVERERS = "xd";
+const std::string MscnSolution::MATRIX_FACTORIES = "xf";
+const std::string MscnSolution::MATRIX_MAGAZINES = "xm";
 
 
-Solution::Solution()
+MscnSolution::MscnSolution()
 {
 	setSize(DEFAULT_FACILITIES_NUMBER, DEFAULT_FACILITIES_NUMBER, DEFAULT_FACILITIES_NUMBER, DEFAULT_FACILITIES_NUMBER);
 }
 
-Solution::Solution(int numberOfDeliverers, int numberOfFactories, int numberOfMagazines, int numberOfStores, Exception& exception)
+MscnSolution::MscnSolution(int numberOfDeliverers, int numberOfFactories, int numberOfMagazines, int numberOfStores, Exception& exception)
 {
 	exception = setSize(numberOfDeliverers, numberOfFactories, numberOfMagazines, numberOfStores);
 }
 
-Solution::~Solution()
+MscnSolution::~MscnSolution()
 {
 }
 
-Exception Solution::readFormFile(std::string path)
+Exception MscnSolution::readFormFile(std::string path)
 {
     FILE* file = fopen(path.c_str(), "r+");
     if (file == NULL)
@@ -71,7 +71,7 @@ Exception Solution::readFormFile(std::string path)
 }
 
 
-Exception Solution::writeToFile(std::string path)
+Exception MscnSolution::writeToFile(std::string path)
 {
     FILE* file = fopen(path.c_str(), "w+");
     if (file == NULL)
@@ -109,7 +109,7 @@ Exception Solution::writeToFile(std::string path)
     return Exception(false);
 }
 
-Exception Solution::loadFromArray(Array& array)
+Exception MscnSolution::loadFromArray(Array& array)
 {
     if (array.getSize() != getSolutionLenght())
     {
@@ -136,7 +136,7 @@ Exception Solution::loadFromArray(Array& array)
     return Exception(false);
 }
 
-Exception Solution::toArray(double *& array)
+Exception MscnSolution::toArray(double *& array)
 {
     int solutionLenght = getSolutionLenght();
     double* temp = new double[solutionLenght];
@@ -166,14 +166,14 @@ Exception Solution::toArray(double *& array)
     return Exception(false);
 }
 
-int Solution::getSolutionLenght()
+int MscnSolution::getSolutionLenght()
 {
     return numberOfDeliverers * numberOfFactories +
         numberOfFactories * numberOfMagazines +
         numberOfMagazines * numberOfStores;
 }
 
-Exception Solution::setSize(int numberOfDeliverers, int numberOfFactories, int numberOfMagazines, int numberOfStores)
+Exception MscnSolution::setSize(int numberOfDeliverers, int numberOfFactories, int numberOfMagazines, int numberOfStores)
 {
 	if (numberOfDeliverers <= 0 || numberOfFactories <= 0 || numberOfMagazines <= 0 || numberOfStores <= 0)
 	{
@@ -188,7 +188,7 @@ Exception Solution::setSize(int numberOfDeliverers, int numberOfFactories, int n
 	return Exception(false);
 }
 
-Exception Solution::setNumberOfDeliverers(int numberOfDeliverers)
+Exception MscnSolution::setNumberOfDeliverers(int numberOfDeliverers)
 {
     if (numberOfDeliverers <= 0)
     {
@@ -202,7 +202,7 @@ Exception Solution::setNumberOfDeliverers(int numberOfDeliverers)
     return Exception(false);
 }
 
-Exception Solution::setNumberOfFactories(int numberOfFactories)
+Exception MscnSolution::setNumberOfFactories(int numberOfFactories)
 {
     if (numberOfFactories <= 0)
     {
@@ -217,7 +217,7 @@ Exception Solution::setNumberOfFactories(int numberOfFactories)
     return Exception(false);
 }
 
-Exception Solution::setNumberOfMagazines(int numberOfMagazines)
+Exception MscnSolution::setNumberOfMagazines(int numberOfMagazines)
 {
     if (numberOfMagazines <= 0)
     {
@@ -232,7 +232,7 @@ Exception Solution::setNumberOfMagazines(int numberOfMagazines)
     return Exception(false);
 }
 
-Exception Solution::setNumberOfStores(int numberOfStores)
+Exception MscnSolution::setNumberOfStores(int numberOfStores)
 {
     if (numberOfStores <= 0)
     {
@@ -246,7 +246,7 @@ Exception Solution::setNumberOfStores(int numberOfStores)
     return Exception(false);
 }
 
-Exception Solution::setValue(int index, double value)
+Exception MscnSolution::setValue(int index, double value)
 {
 	int solutionLenght = getSolutionLenght();
 	int xdLength = numberOfDeliverers * numberOfFactories;
@@ -274,7 +274,7 @@ Exception Solution::setValue(int index, double value)
 	return Exception(false);
 }
 
-Exception Solution::getValue(int index, double& value)
+Exception MscnSolution::getValue(int index, double& value)
 {
 	int solutionLenght = getSolutionLenght();
 	int xdLength = numberOfDeliverers * numberOfFactories;
@@ -302,37 +302,42 @@ Exception Solution::getValue(int index, double& value)
 	return Exception(false);
 }
 
-int Solution::getNumberOfDeliverers()
+Solution* MscnSolution::clone()
+{
+	return new MscnSolution(*this);
+}
+
+int MscnSolution::getNumberOfDeliverers()
 {
 	return numberOfDeliverers;
 }
 
-int Solution::getNumberOfFactories()
+int MscnSolution::getNumberOfFactories()
 {
 	return numberOfFactories;
 }
 
-int Solution::getNumberOfMagazines()
+int MscnSolution::getNumberOfMagazines()
 {
 	return numberOfMagazines;
 }
 
-int Solution::getNumberOfStores()
+int MscnSolution::getNumberOfStores()
 {
 	return numberOfStores;
 }
 
-Matrix& Solution::getDeliverersMatrix()
+Matrix& MscnSolution::getDeliverersMatrix()
 {
     return xd;
 }
 
-Matrix& Solution::getFactoriesMatrix()
+Matrix& MscnSolution::getFactoriesMatrix()
 {
     return xf;
 }
 
-Matrix& Solution::getMagazinesMatrix()
+Matrix& MscnSolution::getMagazinesMatrix()
 {
     return xm;
 }

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "MscnProblem.h"
 #include "Util.h"
+#include "MscnSolution.h"
 #include <iostream>
 
 const std::string MscnProblem::SEPARATOR = ";";
@@ -45,10 +46,12 @@ const double MscnProblem::MAX_BOUNDARY_MAX_CONSTRAINT = 220;
 MscnProblem::MscnProblem()
 {
     qualityInvokeCounter = 0;
-    setNumberOfDeliverers(DEFAULT_FACILITIES_NUMBER);
-    setNumberOfFactories(DEFAULT_FACILITIES_NUMBER);
-    setNumberOfMagazines(DEFAULT_FACILITIES_NUMBER);
-    setNumberOfStores(DEFAULT_FACILITIES_NUMBER);
+	setSize(DEFAULT_FACILITIES_NUMBER, DEFAULT_FACILITIES_NUMBER, DEFAULT_FACILITIES_NUMBER, DEFAULT_FACILITIES_NUMBER);
+}
+
+MscnProblem::MscnProblem(int numberOfDeliverers, int numberOfFactories, int numberOfMagazines, int numberOfStores, Exception& exception)
+{
+	exception = setSize(numberOfDeliverers, numberOfFactories, numberOfMagazines, numberOfStores);
 }
 
 MscnProblem::~MscnProblem()
@@ -57,10 +60,18 @@ MscnProblem::~MscnProblem()
 
 bool MscnProblem::sameSize(Solution& solution)
 {
-	return solution.getNumberOfDeliverers() == numberOfDeliverers &&
-		solution.getNumberOfFactories() == numberOfFactories &&
-		solution.getNumberOfMagazines() == numberOfMagazines &&
-		solution.getNumberOfStores() == numberOfStores;
+	try 
+	{
+		MscnSolution& mscnSolution = dynamic_cast<MscnSolution&>(solution);
+		return mscnSolution.getNumberOfDeliverers() == numberOfDeliverers &&
+			mscnSolution.getNumberOfFactories() == numberOfFactories &&
+			mscnSolution.getNumberOfMagazines() == numberOfMagazines &&
+			mscnSolution.getNumberOfStores() == numberOfStores;
+	}
+	catch(const std::bad_cast& e)
+	{
+		return solution.getSolutionLenght() == getRequiredSolutionLenght();
+	}
 }
 
 Exception MscnProblem::getQuality(double* solution, double& result)
@@ -80,7 +91,17 @@ Exception MscnProblem::getQuality(Solution& solution, double& result)
 	{
 		return Exception(true);
 	}
-    return getQuality(solution.getDeliverersMatrix(), solution.getFactoriesMatrix(), solution.getMagazinesMatrix(), result);
+	try
+	{
+		MscnSolution& mscnSolution = dynamic_cast<MscnSolution&>(solution);
+		return getQuality(mscnSolution.getDeliverersMatrix(), mscnSolution.getFactoriesMatrix(), mscnSolution.getMagazinesMatrix(), result);
+	}
+	catch (const std::bad_cast& e)
+	{
+		double* array;
+		solution.toArray(array);
+		return getQuality(array, result);
+	}
 }
 
 Exception MscnProblem::constraintsSatified(double* solution, bool& result)
@@ -100,7 +121,17 @@ Exception MscnProblem::constraintsSatified(Solution& solution, bool& result)
 	{
 		return Exception(true);
 	}
-    return constraintsSatified(solution.getDeliverersMatrix(), solution.getFactoriesMatrix(), solution.getMagazinesMatrix(), result);
+	try
+	{
+		MscnSolution& mscnSolution = dynamic_cast<MscnSolution&>(solution);
+		return constraintsSatified(mscnSolution.getDeliverersMatrix(), mscnSolution.getFactoriesMatrix(), mscnSolution.getMagazinesMatrix(), result);
+	}
+	catch (const std::bad_cast& e)
+	{
+		double* array;
+		solution.toArray(array);
+		return constraintsSatified(array, result);
+	}
 }
 
 Exception MscnProblem::writeToFile(std::string path)
@@ -412,6 +443,20 @@ Exception MscnProblem::setNumberOfStores(int numberOfStores)
     p.setSize(numberOfStores);
 
     return Exception(false);
+}
+
+Exception MscnProblem::setSize(int numberOfDeliverers, int numberOfFactories, int numberOfMagazines, int numberOfStores)
+{
+	if (numberOfDeliverers <= 0 || numberOfFactories <= 0 || numberOfMagazines <= 0 || numberOfStores <= 0)
+	{
+		return Exception(true);
+	}
+
+	setNumberOfDeliverers(numberOfDeliverers);
+	setNumberOfFactories(numberOfFactories);
+	setNumberOfMagazines(numberOfMagazines);
+	setNumberOfStores(numberOfStores);
+	return Exception(false);
 }
 
 int MscnProblem::getNumberOfDeliverers()

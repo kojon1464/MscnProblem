@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "MscnProblem.h"
 #include "Solution.h"
+#include "MscnSolution.h"
 #include "Random.h"
 #include "RandomSearch.h"
 #include "DiffEvol.h"
@@ -43,32 +44,46 @@ int main()
     std::cout << random.getInt(-100, -5) << std::endl;
     std::cout << random.getInt(-100, -5) << std::endl;*/
 
-    MscnProblem problem;
-    problem.generateInstance(20);
-    Exception exception;
+	int D = 3;
+	int F = 3;
+	int M = 3;
+	int S = 3;
 
-    int TIME_LIMIT = 13;
+	Exception exception;
+    Problem* problem = new MscnProblem(D, F, M, S, exception);
+    problem->generateInstance(20);
+	Solution* solution = new MscnSolution(D, F, M, S, exception);
+
+	Solution* solution2 = new MscnSolution();
+	*solution2 = *solution;
+
+    int TIME_LIMIT = 3;
     int QUALITY_INVOKE_LIMIT = 1000000;
 
     clock_t begin = clock();
 
-    DiffEvol search(&problem, exception);
+    Optimizer* search = new RandomSearch(problem, solution, exception);
 
-    while((clock() - begin)/CLOCKS_PER_SEC <= TIME_LIMIT && problem.getQualityInvokeCounter() <= QUALITY_INVOKE_LIMIT)
+    while((clock() - begin)/CLOCKS_PER_SEC <= TIME_LIMIT && problem->getQualityInvokeCounter() <= QUALITY_INVOKE_LIMIT)
     {
-        search.iterate();
+        search->iterate();
     }
 
-    Solution solution;
-    if (search.getBestSolution(solution).getOcurred()) 
+    MscnSolution* bestSolution = new MscnSolution(D, F, M, S, exception);
+    if (search->getBestSolution(*bestSolution).getOcurred())
     {
         std::cout << "Nie znaleziono rozwiazania" << std::endl;
     }
     else
     {
         double quality;
-        problem.getQuality(solution, quality);
+        problem->getQuality(*bestSolution, quality);
         std::cout << "bestSolution quality: " << quality << std::endl;
-        solution.writeToFile("bestSolution.txt");
+		bestSolution->writeToFile("bestSolution.txt");
     }
+
+	delete problem;
+	delete solution;
+	delete search;
+	delete bestSolution;
 }

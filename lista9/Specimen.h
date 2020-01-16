@@ -1,13 +1,16 @@
 #pragma once
 
 #include "Solution.h"
-#include "MscnProblem.h"
+#include "Problem.h"
 
 class Specimen
 {
 public:
-	Specimen(MscnProblem* problem, Exception& exception);
+	Specimen(Problem* problem, Solution* solution, Exception& exception);
+	Specimen(const Specimen& other);
 	~Specimen();
+
+	Specimen& operator=(const Specimen& other);
 
 	Exception randomizeSolution();
 	Exception getQuality(double& result);
@@ -19,7 +22,10 @@ public:
 
     Solution& getSolution();
 private:
-	Solution solution;
-	MscnProblem* problem;
+	Solution* solution;
+	Problem* problem;
+
+	void remove();
+	void copy(const Specimen& other);
 };
 

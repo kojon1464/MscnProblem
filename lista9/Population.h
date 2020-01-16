@@ -2,7 +2,7 @@
 
 #include "Specimen.h"
 #include "Exception.h"
-#include "MscnProblem.h"
+#include "Problem.h"
 #include <vector>
 
 class Population
@@ -18,7 +18,7 @@ public:
 	Population& operator=(const Population& other);
     Specimen* operator[](const int index);
 
-	Exception initializate(MscnProblem& problem);
+	Exception initializate(Problem* problem, Solution* solution);
     Exception getBestSolution(Solution& solution);
 
 	Exception getRandomSpecimen(Specimen*& specimen);

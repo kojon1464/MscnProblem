@@ -5,14 +5,14 @@
 const double DEFAULT_CROSS_PROBABILITY = 0.5;
 const double DEFAULT_DIFFERENCE_WEIGHT = 0.2;
 
-DiffEvol::DiffEvol(MscnProblem* problem, Exception& exception)
+DiffEvol::DiffEvol(Problem* problem, Solution* solution, Exception& exception)
 {
-    if (problem == NULL)
+	if (problem == NULL || solution == NULL || solution->getSolutionLenght() != problem->getRequiredSolutionLenght())
     {
         exception.setOcurred(true);
     }
     this->problem = problem;
-    population.initializate(*problem);
+    population.initializate(problem, solution);
 }
 
 Exception DiffEvol::getBestQuality(double& bestQuality)

@@ -156,10 +156,13 @@
     <ClInclude Include="Exception.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="MscnProblem.h" />
+    <ClInclude Include="Optimizer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Population.h" />
+    <ClInclude Include="Problem.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="RandomSearch.h" />
+    <ClInclude Include="MscnSolution.h" />
     <ClInclude Include="Solution.h" />
     <ClInclude Include="Specimen.h" />
     <ClInclude Include="Util.h" />
@@ -180,7 +183,7 @@
     <ClCompile Include="Population.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="RandomSearch.cpp" />
-    <ClCompile Include="Solution.cpp" />
+    <ClCompile Include="MscnSolution.cpp" />
     <ClCompile Include="Specimen.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>

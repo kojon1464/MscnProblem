@@ -49,13 +49,13 @@ Specimen* Population::operator[](const int index)
     return population[index];
 }
 
-Exception Population::initializate(MscnProblem& problem)
+Exception Population::initializate(Problem* problem, Solution* solution)
 {
     remove();
 	for (int i = 0; i < populationSize; i++)
 	{
 		Exception exception;
-		Specimen* tempSpecimen = new Specimen(&problem, exception);
+		Specimen* tempSpecimen = new Specimen(problem, solution, exception);
 		bool constraintsSatified = false;
 		do 
 		{

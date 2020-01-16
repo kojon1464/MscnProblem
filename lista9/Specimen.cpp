@@ -2,59 +2,91 @@
 #include "Specimen.h"
 #include "Util.h"
 
-Specimen::Specimen(MscnProblem* problem, Exception& exception)
+Specimen::Specimen(Problem* problem, Solution* solution, Exception& exception)
 {
-	if (problem == NULL)
+	if (problem == NULL || solution == NULL || problem->getRequiredSolutionLenght() != solution->getSolutionLenght())
 	{
 		exception.setOcurred(true);
 	}
 	this->problem = problem;
-	solution.setSize(problem->getNumberOfDeliverers(), problem->getNumberOfFactories(), problem->getNumberOfMagazines(), problem->getNumberOfStores());
+	this->solution = solution->clone();
+}
+
+Specimen::Specimen(const Specimen& other)
+{
+	copy(other);
 }
 
 Specimen::~Specimen()
 {
+	remove();
+}
+
+Specimen& Specimen::operator=(const Specimen& other)
+{
+	if (&other == this) 
+	{
+		return *this;
+	}
+	remove();
+	copy(other);
+	return *this;
 }
 
 Exception Specimen::randomizeSolution()
 {
-	return util::generateRandomSolution(*problem, solution);
+	return util::generateRandomSolution(*problem, *solution);
 }
 
 Exception Specimen::getQuality(double& result)
 {
-	return problem->getQuality(solution, result);
+	return problem->getQuality(*solution, result);
 }
 
 Exception Specimen::constraintsSatified(bool& result)
 {
-	return problem->constraintsSatified(solution, result);
+	return problem->constraintsSatified(*solution, result);
 }
 
 Exception Specimen::setClampedValue(int index, double value)
 {
-	if (problem->getRequiredSolutionLenght() != solution.getSolutionLenght() || index < 0 || index >= solution.getSolutionLenght())
+	if (problem->getRequiredSolutionLenght() != solution->getSolutionLenght() || index < 0 || index >= solution->getSolutionLenght())
 	{
 		return Exception(true);
 	}
 	double min, max;
 	problem->getSolutionBounds(index, min, max);
 	value = std::max(min, std::min(max, value));
-	solution.setValue(index, value);
+	solution->setValue(index, value);
 	return Exception(false);
 }
 
 Exception Specimen::getValue(int index, double& value)
 {
-	return solution.getValue(index, value);
+	return solution->getValue(index, value);
 }
 
 int Specimen::getSolutionSize()
 {
-	return solution.getSolutionLenght();
+	return solution->getSolutionLenght();
 }
 
 Solution& Specimen::getSolution()
 {
-    return solution;
+    return *solution;
+}
+
+void Specimen::remove()
+{
+	if (solution != NULL)
+	{
+		delete solution;
+	}
+	problem = NULL;
+}
+
+void Specimen::copy(const Specimen& other)
+{
+	solution = other.solution->clone();
+	problem = other.problem;
 }

@@ -3,9 +3,10 @@
 #include "Matrix.h"
 #include "Array.h"
 #include "Solution.h"
+#include "Problem.h"
 #include <string>
 
-class MscnProblem
+class MscnProblem : public Problem
 {
 public:
     static const std::string SEPARATOR;
@@ -48,6 +49,7 @@ public:
     static const double MAX_BOUNDARY_MAX_CONSTRAINT;
 
     MscnProblem();
+	MscnProblem(int numberOfDeliverers, int numberOfFactories, int numberOfMagazines, int numberOfStores, Exception& exception);
     ~MscnProblem();
 
 	bool sameSize(Solution& solution);
@@ -70,6 +72,8 @@ public:
     Exception setNumberOfFactories(int numberOfFactories);
     Exception setNumberOfMagazines(int numberOfMagazines);
     Exception setNumberOfStores(int numberOfStores);
+
+	Exception setSize(int numberOfDeliverers, int numberOfFactories, int numberOfMagazines, int numberOfStores);
 
     int getNumberOfDeliverers();
     int getNumberOfFactories();
