@@ -54,10 +54,7 @@ int main()
     problem->generateInstance(20);
 	Solution* solution = new MscnSolution(D, F, M, S, exception);
 
-	Solution* solution2 = new MscnSolution();
-	*solution2 = *solution;
-
-    int TIME_LIMIT = 3;
+    int TIME_LIMIT = 15;
     int QUALITY_INVOKE_LIMIT = 1000000;
 
     clock_t begin = clock();
@@ -69,8 +66,8 @@ int main()
         search->iterate();
     }
 
-    MscnSolution* bestSolution = new MscnSolution(D, F, M, S, exception);
-    if (search->getBestSolution(*bestSolution).getOcurred())
+    Solution* bestSolution = new MscnSolution(D, F, M, S, exception);
+    if (search->getBestSolution(bestSolution).getOcurred())
     {
         std::cout << "Nie znaleziono rozwiazania" << std::endl;
     }

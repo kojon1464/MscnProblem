@@ -44,14 +44,14 @@ Exception RandomSearch::getBestQuality(double& bestQuality)
 	return this->bestQuality;
 }
 
-Exception RandomSearch::getBestSolution(Solution& bestSolution)
+Exception RandomSearch::getBestSolution(Solution*& bestSolution)
 {
     if (!found)
     {
         return Exception(true);
     }
 
-    bestSolution = *(this->bestSolution);
+    bestSolution = this->bestSolution->clone();
 
     return Exception(false);
 }

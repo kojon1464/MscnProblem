@@ -15,7 +15,7 @@ public:
 	RandomSearch& operator=(const RandomSearch& other);
 
 	Exception getBestQuality(double& bestQuality);
-    Exception getBestSolution(Solution& bestSolution);
+    Exception getBestSolution(Solution*& bestSolution);
     Exception iterate();
 private:
     Problem* problem;

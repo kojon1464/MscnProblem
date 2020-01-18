@@ -67,7 +67,7 @@ Exception Population::initializate(Problem* problem, Solution* solution)
     return Exception(false);
 }
 
-Exception Population::getBestSolution(Solution& solution)
+Exception Population::getBestSolution(Solution*& solution)
 {
     if (population.size() != populationSize)
     {
@@ -86,7 +86,7 @@ Exception Population::getBestSolution(Solution& solution)
             bestQuality = tempQuality;
         }
     }
-    solution = best->getSolution();
+    solution = best->getSolution().clone();
     return Exception(false);
 }
 

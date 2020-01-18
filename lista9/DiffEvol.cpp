@@ -2,8 +2,8 @@
 #include "DiffEvol.h"
 #include <iostream>
 
-const double DEFAULT_CROSS_PROBABILITY = 0.5;
-const double DEFAULT_DIFFERENCE_WEIGHT = 0.2;
+const double DiffEvol::DEFAULT_CROSS_PROBABILITY = 0.5;
+const double DiffEvol::DEFAULT_DIFFERENCE_WEIGHT = 0.2;
 
 DiffEvol::DiffEvol(Problem* problem, Solution* solution, Exception& exception)
 {
@@ -13,6 +13,8 @@ DiffEvol::DiffEvol(Problem* problem, Solution* solution, Exception& exception)
     }
     this->problem = problem;
     population.initializate(problem, solution);
+    crossProbability = DEFAULT_CROSS_PROBABILITY;
+    differenceWeight = DEFAULT_DIFFERENCE_WEIGHT;
 }
 
 Exception DiffEvol::getBestQuality(double& bestQuality)
@@ -24,7 +26,7 @@ DiffEvol::~DiffEvol()
 {
 }
 
-Exception DiffEvol::getBestSolution(Solution& bestSolution)
+Exception DiffEvol::getBestSolution(Solution*& bestSolution)
 {
     return population.getBestSolution(bestSolution);
 }

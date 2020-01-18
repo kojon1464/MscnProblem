@@ -15,7 +15,7 @@ public:
     ~DiffEvol();
 
 	Exception getBestQuality(double& bestQuality);
-    Exception getBestSolution(Solution& bestSolution);
+    Exception getBestSolution(Solution*& bestSolution);
     Exception iterate();
 
     Exception setCrossProbability(double crossProbability);

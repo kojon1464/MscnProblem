@@ -19,7 +19,7 @@ public:
     Specimen* operator[](const int index);
 
 	Exception initializate(Problem* problem, Solution* solution);
-    Exception getBestSolution(Solution& solution);
+    Exception getBestSolution(Solution*& solution);
 
 	Exception getRandomSpecimen(Specimen*& specimen);
 
