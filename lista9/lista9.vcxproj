@@ -165,6 +165,7 @@
     <ClInclude Include="MscnSolution.h" />
     <ClInclude Include="Solution.h" />
     <ClInclude Include="Specimen.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
@@ -185,6 +186,7 @@
     <ClCompile Include="RandomSearch.cpp" />
     <ClCompile Include="MscnSolution.cpp" />
     <ClCompile Include="Specimen.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

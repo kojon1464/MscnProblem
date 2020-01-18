@@ -3,6 +3,7 @@
 #include "Solution.h"
 #include "MscnSolution.h"
 #include "Random.h"
+#include "Timer.h"
 #include "RandomSearch.h"
 #include "DiffEvol.h"
 #include <iostream>
@@ -54,14 +55,15 @@ int main()
     problem->generateInstance(20);
 	Solution* solution = new MscnSolution(D, F, M, S, exception);
 
-    int TIME_LIMIT = 15;
+    int TIME_LIMIT = 10;
     int QUALITY_INVOKE_LIMIT = 1000000;
 
-    clock_t begin = clock();
+    Timer timer;
 
     Optimizer* search = new RandomSearch(problem, solution, exception);
 
-    while((clock() - begin)/CLOCKS_PER_SEC <= TIME_LIMIT && problem->getQualityInvokeCounter() <= QUALITY_INVOKE_LIMIT)
+    timer.start();
+    while(timer.getTime() <= TIME_LIMIT && problem->getQualityInvokeCounter() <= QUALITY_INVOKE_LIMIT)
     {
         search->iterate();
     }
