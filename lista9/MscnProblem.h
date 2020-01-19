@@ -56,6 +56,7 @@ public:
 
     Exception getQuality(double* solution, double& result);
     Exception getQuality(Solution& solution, double& result);
+    Exception getQualityAndFix(Solution& solution, double& result);
     Exception constraintsSatified(double* solution, bool& result);
     Exception constraintsSatified(Solution& solution, bool& result);
 
@@ -132,8 +133,10 @@ private:
     Array p;
 
     Exception getQuality(Matrix& xd, Matrix& xf, Matrix& xm, double& result);
+    Exception fixSolution(Matrix& xd, Matrix& xf, Matrix& xm);
     Exception constraintsSatified(Matrix& xd, Matrix& xf, Matrix& xm, bool& result);
 
+    Exception clampNonNegativeValueInMatrix(Matrix& matrix, Matrix& min, Matrix& max);
     Exception setNonNegativeValueMatrix(int row, int column, double value, Matrix& matrix);
     Exception setNonNegativeValueArray(int index, double value, Array& array);
     Exception solutionToMatrices(double* solution, Matrix& xd, Matrix& xf, Matrix& xm);
@@ -147,6 +150,12 @@ private:
     double getFixedCost(Matrix& xd, Matrix& xf, Matrix& xm);
 
     bool checkLimitForFacility(int facilitiesNumber, Matrix& facilityMatrix, Array& facilityLimitAray);
+    void fixLimitForFacility(int facilitiesNumber, Matrix& facilityMatrix, Array& facilityLimitAray);
+    void fixLimitForStores(int storesNumber, Matrix& magazineMatrix, Array& facilityLimitAray);
+    bool checkFlows(int facilitiesNumber, Matrix& delivererMatrix, Matrix& facilityMatrix);
+    void fixFlows(int facilitiesNumber, Matrix& delivererMatrix, Matrix& facilityMatrix);
+    void updateSolutionData(Solution& solution, Matrix& xd, Matrix& xf, Matrix& xm);
+    void updateSolutionDataHelper(Solution& solution, int& index, Matrix& matrix);
 
     Exception addFacilityFixedCost(Matrix& matrix, Array& costArray, double& fixedCost);
 };

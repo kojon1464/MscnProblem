@@ -104,6 +104,30 @@ Exception MscnProblem::getQuality(Solution& solution, double& result)
 	}
 }
 
+Exception MscnProblem::getQualityAndFix(Solution& solution, double& result)
+{
+    if (!sameSize(solution))
+    {
+        return Exception(true);
+    }
+    try
+    {
+        MscnSolution& mscnSolution = dynamic_cast<MscnSolution&>(solution);
+        fixSolution(mscnSolution.getDeliverersMatrix(), mscnSolution.getFactoriesMatrix(), mscnSolution.getMagazinesMatrix());
+        return getQuality(mscnSolution.getDeliverersMatrix(), mscnSolution.getFactoriesMatrix(), mscnSolution.getMagazinesMatrix(), result);
+    }
+    catch (const std::bad_cast& e)
+    {
+        double* array;
+        solution.toArray(array);
+        Matrix xd, xf, xm;
+        solutionToMatrices(array, xd, xf, xm);
+        fixSolution(xd, xf, xm);
+        Exception exception = getQuality(xd, xf, xm, result); //todo: zapisac wynik z macierzy do solution
+        return exception;
+    }
+}
+
 Exception MscnProblem::constraintsSatified(double* solution, bool& result)
 {
     Matrix xd, xf, xm;
@@ -578,6 +602,29 @@ Exception MscnProblem::getQuality(Matrix &xd, Matrix &xf, Matrix& xm, double& re
     return Exception(false);
 }
 
+Exception MscnProblem::fixSolution(Matrix& xd, Matrix& xf, Matrix& xm)
+{
+    Exception exception1, exception2, exception3;
+    exception1 = clampNonNegativeValueInMatrix(xd, xdmin, xdmax);
+    exception2 = clampNonNegativeValueInMatrix(xf, xfmin, xfmax);
+    exception3 = clampNonNegativeValueInMatrix(xm, xmmin, xmmax);
+
+    if (exception1.getOcurred() || exception2.getOcurred() || exception3.getOcurred())
+    {
+        return Exception(true);
+    }
+
+    fixLimitForFacility(numberOfDeliverers, xd, sd);
+    fixLimitForFacility(numberOfFactories, xf, sf);
+    fixLimitForFacility(numberOfMagazines, xm, sm);
+    fixLimitForStores(numberOfStores, xm, ss);
+
+    fixFlows(numberOfFactories, xd, xf);
+    fixFlows(numberOfMagazines, xf, xm);
+
+    return Exception(false);
+}
+
 Exception MscnProblem::constraintsSatified(Matrix& xd, Matrix& xf, Matrix& xm, bool& result)
 {
     result = true;
@@ -610,33 +657,39 @@ Exception MscnProblem::constraintsSatified(Matrix& xd, Matrix& xf, Matrix& xm, b
     double sum = 0;
     for (int i = 0; i < numberOfStores; i++)
     {
-        xf.getColumnSum(i, sum);
+        xm.getColumnSum(i, sum);
         if (sum > ss[i])
         {
             result = false;
         }
     }
 
-    double sum1 = 0;
-    for (int i = 0; i < numberOfFactories; i++)
+    if (!checkFlows(numberOfFactories, xd, xf) ||
+        !checkFlows(numberOfMagazines, xf, xm))
     {
-        xd.getColumnSum(i, sum);
-        xf.getRowSum(i, sum1);
-        if (sum < sum1)
+        result = false;
+    }
+
+    return Exception(false);
+}
+
+Exception MscnProblem::clampNonNegativeValueInMatrix(Matrix& matrix, Matrix& min, Matrix& max)
+{
+    if (matrix.getSizeX() != min.getSizeX() || matrix.getSizeX() != max.getSizeX() ||
+        matrix.getSizeY() != min.getSizeY() || matrix.getSizeY() != max.getSizeY())
+    {
+        return Exception(true);
+    }
+
+    const int zero = 0;
+    for (int i = 0; i < matrix.getSizeY(); i++)
+    {
+        for (int j = 0; j < matrix.getSizeX(); j++)
         {
-            result = false;
+            matrix[i][j] = std::max(0.0, std::max(min[i][j], std::min(max[i][j], matrix[i][j])));
         }
     }
 
-    for (int i = 0; i < numberOfMagazines; i++)
-    {
-        xf.getColumnSum(i, sum);
-        xm.getRowSum(i, sum1);
-        if (sum < sum1)
-        {
-            result = false;
-        }
-    }
     return Exception(false);
 }
 
@@ -806,6 +859,95 @@ bool MscnProblem::checkLimitForFacility(int facilitiesNumber, Matrix& facilityMa
         }
     }
     return true;
+}
+
+void MscnProblem::fixLimitForFacility(int facilitiesNumber, Matrix& facilityMatrix, Array& facilityLimitAray)
+{
+    double sum = 0;
+    for (int i = 0; i < facilitiesNumber; i++)
+    {
+        facilityMatrix.getRowSum(i, sum);
+        if (sum > facilityLimitAray[i])
+        {
+            double difference = sum - facilityLimitAray[i] + 1;
+            for (int j = 0; j < facilityMatrix.getSizeX(); j++)
+            {
+                facilityMatrix[i][j] -= difference * (sum / facilityMatrix[i][j]);
+            }
+        }
+    }
+}
+
+void MscnProblem::fixLimitForStores(int storesNumber, Matrix& magazineMatrix, Array& storeLimitAray)
+{
+    double sum = 0;
+    for (int i = 0; i < storesNumber; i++)
+    {
+        magazineMatrix.getColumnSum(i, sum);
+        if (sum > ss[i])
+        {
+            double difference = sum - storeLimitAray[i] + 1;
+            for (int j = 0; j < magazineMatrix.getSizeY(); j++)
+            {
+                magazineMatrix[j][i] -= difference * (sum / magazineMatrix[j][i]);
+            }
+        }
+    }
+}
+
+bool MscnProblem::checkFlows(int facilitiesNumber, Matrix& delivererMatrix, Matrix& facilityMatrix)
+{
+    double deliveredSum = 0;
+    double sendSum = 0;
+    for (int i = 0; i < facilitiesNumber; i++)
+    {
+        delivererMatrix.getColumnSum(i, deliveredSum);
+        facilityMatrix.getRowSum(i, sendSum);
+        if (deliveredSum < sendSum)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+void MscnProblem::fixFlows(int facilitiesNumber, Matrix& delivererMatrix, Matrix& facilityMatrix)
+{
+    double deliveredSum = 0;
+    double sendSum = 0;
+    for (int i = 0; i < facilitiesNumber; i++)
+    {
+        delivererMatrix.getColumnSum(i, deliveredSum);
+        facilityMatrix.getRowSum(i, sendSum);
+        if (deliveredSum < sendSum)
+        {
+            double difference = sendSum - deliveredSum + 1;
+            for (int j = 0; j < facilityMatrix.getSizeX(); j++)
+            {
+                facilityMatrix[i][j] -= difference * (sendSum / facilityMatrix[i][j]);
+            }
+        }
+    }
+}
+
+void MscnProblem::updateSolutionData(Solution& solution, Matrix& xd, Matrix& xf, Matrix& xm)
+{
+    int index = 0;
+    updateSolutionDataHelper(solution, index, xd);
+    updateSolutionDataHelper(solution, index, xf);
+    updateSolutionDataHelper(solution, index, xm);
+}
+
+void MscnProblem::updateSolutionDataHelper(Solution& solution, int& index, Matrix& matrix)
+{
+    for (int i = 0; i < matrix.getSizeY(); i++)
+    {
+        for (int j = 0; j < matrix.getSizeX(); j++)
+        {
+            solution.setValue(index, matrix[i][j]);
+            i++;
+        }
+    }
 }
 
 Exception MscnProblem::addFacilityFixedCost(Matrix& matrix, Array& costArray, double& fixedCost)

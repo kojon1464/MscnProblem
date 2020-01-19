@@ -60,7 +60,7 @@ int main()
 
     Timer timer;
 
-    Optimizer* search = new RandomSearch(problem, solution, exception);
+    Optimizer* search = new DiffEvol(problem, solution, exception);
 
     timer.start();
     while(timer.getTime() <= TIME_LIMIT && problem->getQualityInvokeCounter() <= QUALITY_INVOKE_LIMIT)

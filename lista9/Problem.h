@@ -6,6 +6,7 @@ public:
 
 	virtual Exception getQuality(double* solution, double& result) = 0;
 	virtual Exception getQuality(Solution& solution, double& result) = 0;
+    virtual Exception getQualityAndFix(Solution& solution, double& result) = 0;
 	virtual Exception constraintsSatified(double* solution, bool& result) = 0;
 	virtual Exception constraintsSatified(Solution& solution, bool& result) = 0;
 
