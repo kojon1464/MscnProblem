@@ -11,40 +11,6 @@
 
 int main()
 {
-	/*MscnProblem problem;
-	
-    if (problem.readFormFile("text.txt").getOcurred())
-    {
-        std::cout << "blad";
-        return -1;
-    }
-	double quality;
-	//double solution[11] = {3677.99, 297.689, 402.775, 1700.9, 848.95, 225.568, 900.983, 460.027, 848.94, 225.152, 769.998};
-    double* array;
-    Solution solution;
-    if (solution.readFormFile("solution.txt").getOcurred())
-    {
-        std::cout << "blad";
-        return -1;
-    }
-    solution.toArray(array);
-	bool satisfied;
-	problem.getQuality(array, quality);
-	problem.constraintsSatified(array, satisfied);
-	std::cout << quality << std::endl;
-	std::cout << satisfied << std::endl;
-	problem.writeToFile("result.txt");
-	double min, max;
-	problem.getSolutionBounds(7, min, max);
-	std::cout << min << std::endl;
-	std::cout << max << std::endl;
-    delete[] array;
-
-    Random random(10);
-    std::cout << random.getInt(-100, -5) << std::endl;
-    std::cout << random.getInt(-100, -5) << std::endl;
-    std::cout << random.getInt(-100, -5) << std::endl;*/
-
 	int D = 3;
 	int F = 3;
 	int M = 3;
@@ -76,8 +42,10 @@ int main()
     else
     {
         double quality;
+        bool constraints;
         problem->getQuality(*bestSolution, quality);
-        std::cout << "bestSolution quality: " << quality << std::endl;
+        problem->constraintsSatified(*bestSolution, constraints);
+        std::cout << "bestSolution quality: " << quality << " constarinst: " << constraints << std::endl;
 		bestSolution->writeToFile("bestSolution.txt");
     }
 

@@ -2,7 +2,7 @@
 #include "DiffEvol.h"
 #include <iostream>
 
-const double DiffEvol::DEFAULT_CROSS_PROBABILITY = 0.5;
+const double DiffEvol::DEFAULT_CROSS_PROBABILITY = 0.8;
 const double DiffEvol::DEFAULT_DIFFERENCE_WEIGHT = 0.2;
 
 DiffEvol::DiffEvol(Problem* problem, Solution* solution, Exception& exception)
@@ -60,12 +60,10 @@ Exception DiffEvol::iterate()
 			}
 		}
 
-		bool constraintsSatisfied;
 		double oldQuality, newQuality;
 		current->getQuality(oldQuality);
-		newSpecimen->constraintsSatified(constraintsSatisfied);
-		newSpecimen->getQuality(newQuality);
-		if (constraintsSatisfied && newQuality > oldQuality)
+		newSpecimen->getQualityAndFix(newQuality);
+		if (newQuality > oldQuality)
 		{
 			*current = *newSpecimen;
 			std::cout << "found better specimen, quality: " << newQuality << std::endl;

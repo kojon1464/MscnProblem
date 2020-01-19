@@ -56,12 +56,9 @@ Exception Population::initializate(Problem* problem, Solution* solution)
 	{
 		Exception exception;
 		Specimen* tempSpecimen = new Specimen(problem, solution, exception);
-		bool constraintsSatified = false;
-		do 
-		{
-			tempSpecimen->randomizeSolution();
-			tempSpecimen->constraintsSatified(constraintsSatified);
-		} while (!constraintsSatified);
+		double quality = 0;
+		tempSpecimen->randomizeSolution();
+		tempSpecimen->getQualityAndFix(quality);
 		population.push_back(tempSpecimen);
 	}
     return Exception(false);

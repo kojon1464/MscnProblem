@@ -38,8 +38,8 @@ const double MscnProblem::PROFIT_MIN_CONSTRAINT = 2;
 const double MscnProblem::PROFIT_MAX_CONSTRAINT = 100;
 const double MscnProblem::FACILITY_LIMIT_MIN_CONSTRAINT = 100;
 const double MscnProblem::FACILITY_LIMIT_MAX_CONSTRAINT = 7000;
-const double MscnProblem::MIN_BOUNDARY_MIN_CONSTRAINT = 0;
-const double MscnProblem::MIN_BOUNDARY_MAX_CONSTRAINT = 20;
+const double MscnProblem::MIN_BOUNDARY_MIN_CONSTRAINT = 0; // Note that if you want to be sure that getQualityAndFix gives you
+const double MscnProblem::MIN_BOUNDARY_MAX_CONSTRAINT = 0; // valid solution at 100% chance min boundary has to be 0
 const double MscnProblem::MAX_BOUNDARY_MIN_CONSTRAINT = 180;
 const double MscnProblem::MAX_BOUNDARY_MAX_CONSTRAINT = 220;
 
@@ -869,10 +869,10 @@ void MscnProblem::fixLimitForFacility(int facilitiesNumber, Matrix& facilityMatr
         facilityMatrix.getRowSum(i, sum);
         if (sum > facilityLimitAray[i])
         {
-            double difference = sum - facilityLimitAray[i] + 1;
+            double multiplayer = std::max(0.0, std::min((facilityLimitAray[i] - 1)/sum, 1.0));
             for (int j = 0; j < facilityMatrix.getSizeX(); j++)
             {
-                facilityMatrix[i][j] -= difference * (sum / facilityMatrix[i][j]);
+                facilityMatrix[i][j] *= multiplayer;
             }
         }
     }
@@ -886,10 +886,10 @@ void MscnProblem::fixLimitForStores(int storesNumber, Matrix& magazineMatrix, Ar
         magazineMatrix.getColumnSum(i, sum);
         if (sum > ss[i])
         {
-            double difference = sum - storeLimitAray[i] + 1;
+            double multiplayer = std::max(0.0, std::min((storeLimitAray[i] - 1) / sum, 1.0));
             for (int j = 0; j < magazineMatrix.getSizeY(); j++)
             {
-                magazineMatrix[j][i] -= difference * (sum / magazineMatrix[j][i]);
+                magazineMatrix[j][i] *= multiplayer;
             }
         }
     }
@@ -921,10 +921,10 @@ void MscnProblem::fixFlows(int facilitiesNumber, Matrix& delivererMatrix, Matrix
         facilityMatrix.getRowSum(i, sendSum);
         if (deliveredSum < sendSum)
         {
-            double difference = sendSum - deliveredSum + 1;
+            double multiplayer = std::max(0.0, std::min((deliveredSum - 1) / sendSum, 1.0));
             for (int j = 0; j < facilityMatrix.getSizeX(); j++)
             {
-                facilityMatrix[i][j] -= difference * (sendSum / facilityMatrix[i][j]);
+                facilityMatrix[i][j] *= multiplayer;
             }
         }
     }

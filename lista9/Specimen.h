@@ -14,9 +14,11 @@ public:
 
 	Exception randomizeSolution();
 	Exception getQuality(double& result);
+    Exception getQualityAndFix(double& result);
 	Exception constraintsSatified(bool& result);
 
 	Exception setClampedValue(int index, double value);
+    Exception setValue(int index, double value);
 	Exception getValue(int index, double& value);
 	int getSolutionSize();
 

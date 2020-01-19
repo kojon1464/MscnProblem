@@ -60,22 +60,17 @@ Exception RandomSearch::iterate()
 {
     util::generateRandomSolution(*problem, *tempSolution);
 
-    bool result;
-    problem->constraintsSatified(*tempSolution, result);
 
-    if (result)
+    double tempQuality = 0;
+    problem->getQualityAndFix(*tempSolution, tempQuality);
+    if (tempQuality > bestQuality)
     {
-        double tempQuality = 0;
-        problem->getQuality(*tempSolution, tempQuality);
-        if (tempQuality > bestQuality)
-        {
-			Solution* temp = bestSolution;
-			bestSolution = tempSolution;
-			tempSolution = temp;
-            bestQuality = tempQuality;
-            found = true;
-            std::cout << "found better solution, quality:" << tempQuality << std::endl;
-        }
+		Solution* temp = bestSolution;
+		bestSolution = tempSolution;
+		tempSolution = temp;
+        bestQuality = tempQuality;
+        found = true;
+        std::cout << "found better solution, quality:" << tempQuality << std::endl;
     }
 
     return Exception(false);
